@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опитування: Відеонагляд - Вечір Телеком</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind configuration - defines custom theme settings
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg-dark': '#12141D',       // Dark background from the site
+                        'text-light': '#ffffff',
+                        'text-secondary': '#cccccc',
+                        'accent-blue': '#00aaff',   // Approximate blue accent
+                        'accent-pink': '#ff00ff',   // Approximate pink/purple accent
+                        'border-color': '#333',
+                        'input-bg': '#2a2d35',
+                        'input-bg-hover': '#3a3f4a',
+                        'btn-disabled-bg': '#555',
+                        'btn-disabled-text': '#999',
+                        'error-bg': '#4d1f2a',     // Background for error messages
+                        'error-border': '#ff4d6d', // Border for error messages
+                        'error-text': '#ffcad4',   // Text color for error messages
+                    },
+                    fontFamily: {
+                        // Use 'Inter' as the primary font, fallback to system sans-serif
+                        sans: ['Inter', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for elements not easily handled by Tailwind alone */
+        body {
+            /* --- Background Image Styling --- */
+            background-image: linear-gradient(rgba(18, 20, 29, 0.85), rgba(18, 20, 29, 0.85)), url('https://vstore.net.ua/image/catalog/back.webp'); /* Dimming overlay + image */
+            background-size: cover;       /* Stretch to cover */
+            background-position: center;  /* Center the image */
+            background-attachment: fixed; /* Fix background during scroll */
+            background-color: theme('colors.bg-dark'); /* Fallback color */
+            /* --- End Background Image Styling --- */
+
+            color: theme('colors.text-light');
+            font-family: theme('fontFamily.sans');
+            min-height: 100vh; /* Ensure body takes full height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex-grow: 1; /* Allow main content to grow and push footer down */
+        }
+
+        /* Progress bar gradient */
+        .progress-bar {
+            background: linear-gradient(90deg, theme('colors.accent-blue'), theme('colors.accent-pink'));
+            transition: width 0.3s ease-in-out;
+        }
+
+        /* Custom radio/checkbox styling */
+        input[type="radio"],
+        input[type="checkbox"] {
+            accent-color: theme('colors.accent-pink');
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        /* Input focus styles */
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+             outline: none;
+             border-color: theme('colors.accent-blue');
+             box-shadow: 0 0 5px theme('colors.accent-blue');
+        }
+
+        /* Animation for step appearance */
+        .survey-step { display: none; animation: fadeIn 0.5s; }
+        .survey-step.active { display: block; }
+         @keyframes fadeIn {
+             from { opacity: 0; transform: translateY(10px); }
+             to { opacity: 1; transform: translateY(0); }
+         }
+
+        /* Ensure icons have fixed width for alignment */
+        .form-group label i, .radio-label i, .checkbox-label i {
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0; /* Prevent icons from shrinking */
+        }
+
+        /* Active button state */
+        .btn:not(:disabled):active {
+            transform: scale(0.98);
+            filter: brightness(0.9);
+        }
+
+        /* Disabled button state */
+        .btn:disabled {
+            background-color: theme('colors.btn-disabled-bg');
+            color: theme('colors.btn-disabled-text');
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Style for the error message container */
+        #error-message-container {
+            background-color: theme('colors.error-bg');
+            border: 1px solid theme('colors.error-border');
+            color: theme('colors.error-text');
+            padding: 0.75rem 1rem; /* p-3 equivalent */
+            border-radius: 0.375rem; /* rounded-md equivalent */
+            margin-bottom: 1.25rem; /* mb-5 equivalent */
+            display: none; /* Hidden by default */
+            transition: opacity 0.3s ease;
+        }
+        #error-message-container.visible {
+            display: block;
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body class="bg-bg-dark text-text-light font-sans leading-relaxed">
+
+    <header class="flex flex-col sm:flex-row justify-between items-center p-3 sm:p-5 border-b border-border-color mb-5 bg-bg-dark/80 backdrop-blur-sm sticky top-0 z-10 shadow-md">
+        <div class="flex items-center gap-3 mb-2 sm:mb-0">
+             <img src="https://vechir.ua/wp-content/uploads/2021/03/logo_vechir_2021-02.svg" alt="Логотип Вечір Телеком Старий" class="h-10" onerror="this.style.display='none'">
+             <div class="logo">
+                <img src="https://vechir.ua/wp-content/uploads/2021/03/logo_vechir_2021-03.svg" alt="Логотип Вечір Телеком" class="h-10" onerror="this.outerHTML='<span class=\'text-xl font-bold\'>Вечір Телеком</span>'">
+            </div>
+        </div>
+        <div class="header-contact text-text-secondary text-sm sm:text-base">
+            <i class="fa-solid fa-phone mr-1"></i>
+            <a href="tel:0800303660" class="hover:text-text-light transition-colors">0 800 303 660</a> (Безкоштовно)
+            </div>
+    </header>
+
+
+    <main class="container max-w-3xl mx-auto p-4 sm:p-5 bg-input-bg/90 rounded-lg shadow-xl mb-8">
+
+        <section id="intro">
+            <h2 class="text-2xl font-bold text-accent-blue text-center mb-5 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-video"></i> Опитування щодо послуги "Відеонагляд"
+            </h2>
+            <p class="mb-3 text-text-secondary">Шановний абоненте,</p>
+            <p class="mb-5 text-text-secondary">Дякуємо за Ваш інтерес до нової послуги "Відеонагляд" від "Вечір Телеком"! Ми прагнемо створити сервіс, який буде максимально відповідати Вашим потребам. Просимо Вас приділити кілька хвилин, щоб поділитися своєю думкою та допомогти нам зробити "Відеонагляд" зручним та простим.</p>
+
+            <div class="prize-info bg-black/30 border border-accent-pink p-4 rounded-md my-6 text-center shadow-inner">
+                <p class="mb-2 text-text-secondary">
+                    <i class="fa-solid fa-gift text-accent-pink mr-2"></i> В якості подяки за участь в опитуванні, ми пропонуємо Вам можливість виграти зовнішню камеру відеоспостереження -
+                    <a href="https://vstore.net.ua/ua/videosposterezhennia-i-bezpeka/kamery/3mp-h265-wi-f-bullet-2e-3mp-ipc-k3dp-3h0wf28mm-181592" target="_blank" rel="noopener noreferrer" class="text-accent-blue hover:underline font-semibold">Imou Bullet 2E</a>.
+                </p>
+                <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
+            </div>
+
+            <div class="text-center mt-8">
+                <button class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2.5 px-8 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg" id="start-survey-btn">Розпочати опитування</button>
+            </div>
+        </section>
+
+        <section id="survey-form" class="hidden">
+            <form id="video-survey" novalidate> <div class="progress-indicator mb-8">
+                    <div class="progress-bar-container w-full bg-input-bg rounded-full h-2.5 overflow-hidden shadow-inner">
+                        <div class="progress-bar h-full rounded-full" id="progress-bar" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-text text-center mt-2 text-sm text-text-secondary" id="progress-text">Крок 1 з 12</div>
+                </div>
+
+                <div id="error-message-container" role="alert">
+                    <p id="error-message-text"></p>
+                </div>
+
+                <div class="survey-step active" data-step="1">
+                    <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-file-contract"></i> Питання 1: Ваш номер договору</h3>
+                    <div class="form-group mb-5">
+                        <label for="contract-number" class="block mb-2 font-medium text-text-secondary">Персональний платіжний код<span class="text-accent-pink ml-1">*</span></label>
+                        <input type="text" id="contract-number" name="contract_number" placeholder="Введіть ваш код" required class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
+                        <p class="input-hint text-xs text-text-secondary mt-1">Це поле є обов'язковим для участі в розіграші.</p>
+                    </div>
+                    <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0" disabled>Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="2">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-house-chimney-window"></i> Питання 2: Який тип приміщення? <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="premise_type" value="Квартира" required class="mr-3">
+                             <i class="fa-solid fa-building text-accent-blue mr-3"></i> Квартира
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="premise_type" value="Приватний будинок" class="mr-3">
+                             <i class="fa-solid fa-house text-accent-blue mr-3"></i> Приватний будинок
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="premise_type" value="Офіс" class="mr-3">
+                             <i class="fa-solid fa-briefcase text-accent-blue mr-3"></i> Офіс
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="premise_type" value="Магазин" class="mr-3">
+                             <i class="fa-solid fa-store text-accent-blue mr-3"></i> Магазин
+                         </label>
+                         <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="premise_type" value="Інше" class="mr-3">
+                             <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
+                             <input type="text" name="premise_type_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть тип" disabled>
+                         </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                     </div>
+                </div>
+
+                <div class="survey-step" data-step="3">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-video-camera"></i> Питання 3: Чи користуєтесь Ви зараз системою відеоспостереження? <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="using_now" value="Так" required data-next-step="5" class="mr-3">
+                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="using_now" value="Ні" required data-next-step="4" class="mr-3">
+                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                     </div>
+                </div>
+
+                <div class="survey-step" data-step="4">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> Питання 4: Оберіть основну причину, чому не користуєтесь <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                              <input type="radio" name="reason_not_using" value="Висока вартість" required class="mr-3">
+                              <i class="fa-solid fa-dollar-sign text-accent-blue mr-3"></i> Висока вартість
+                          </label>
+                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                              <input type="radio" name="reason_not_using" value="Складність встановлення" class="mr-3">
+                              <i class="fa-solid fa-screwdriver-wrench text-accent-blue mr-3"></i> Складність встановлення та налаштування
+                          </label>
+                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                              <input type="radio" name="reason_not_using" value="Необхідність обслуговування" class="mr-3">
+                              <i class="fa-solid fa-user-gear text-accent-blue mr-3"></i> Необхідність обслуговування
+                          </label>
+                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                              <input type="radio" name="reason_not_using" value="Недостатня обізнаність" class="mr-3">
+                              <i class="fa-solid fa-info-circle text-accent-blue mr-3"></i> Недостатня обізнаність про переваги
+                          </label>
+                          <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                              <input type="radio" name="reason_not_using" value="Інше" class="mr-3">
+                              <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
+                              <input type="text" name="reason_not_using_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть причину" disabled>
+                          </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                     </div>
+                </div>
+
+                <div class="survey-step" data-step="5">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Питання 5: Які Ваші основні цілі від відеоспостереження?</h3>
+                     <p class="input-hint text-sm text-text-secondary mb-4">Оберіть 1-2 найважливіші пункти. <span class="text-accent-pink ml-1">*</span></p>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="checkbox" name="goals[]" value="Безпека" class="mr-3">
+                             <i class="fa-solid fa-shield-halved text-accent-blue mr-3"></i> Забезпечення безпеки та захист від крадіжок
+                         </label>
+                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="checkbox" name="goals[]" value="Контроль" class="mr-3">
+                             <i class="fa-solid fa-users-viewfinder text-accent-blue mr-3"></i> Контроль за дітьми/персоналом/територією
+                         </label>
+                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="checkbox" name="goals[]" value="Докази" class="mr-3">
+                             <i class="fa-solid fa-file-video text-accent-blue mr-3"></i> Отримання доказів у разі інцидентів
+                         </label>
+                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="checkbox" name="goals[]" value="Спокій" class="mr-3">
+                             <i class="fa-solid fa-face-smile-beam text-accent-blue mr-3"></i> Спокій та впевненість
+                         </label>
+                         <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="checkbox" name="goals[]" value="Інше" class="mr-3">
+                             <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
+                             <input type="text" name="goals_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть ціль" disabled>
+                         </label>
+                     </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                     </div>
+                </div>
+
+                <div class="survey-step" data-step="6">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Питання 6: Бюджет на відеоспостереження (щомісяця) <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="budget" value="<300" required class="mr-3"> До 300 грн
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="budget" value="300-500" class="mr-3"> 300-500 грн
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="budget" value="500-800" class="mr-3"> 500-800 грн
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="budget" value=">800" class="mr-3"> Більше 800 грн
+                         </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                     </div>
+                </div>
+
+                <div class="survey-step" data-step="7">
+                    <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-camera-retro"></i> Питання 7: Необхідна кількість камер <span class="text-accent-pink ml-1">*</span></h3>
+                    <div class="form-group space-y-3 mb-5">
+                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="radio" name="camera_count" value="1" required class="mr-3"> 1
+                        </label>
+                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="radio" name="camera_count" value="2-3" class="mr-3"> 2-3
+                        </label>
+                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="radio" name="camera_count" value="4-5" class="mr-3"> 4-5
+                        </label>
+                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="radio" name="camera_count" value=">5" class="mr-3"> Більше 5
+                        </label>
+                    </div>
+                    <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="8">
+                    <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-list-check"></i> Питання 8: Важливі функції <span class="text-accent-pink ml-1">*</span></h3>
+                    <div class="form-group space-y-3 mb-5">
+                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Нічна зйомка" class="mr-3">
+                            <i class="fa-solid fa-moon text-accent-blue mr-3"></i> Нічна зйомка
+                        </label>
+                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Віддалений доступ" class="mr-3">
+                            <i class="fa-solid fa-mobile-screen-button text-accent-blue mr-3"></i> Віддалений доступ (телефон/комп'ютер)
+                        </label>
+                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Висока якість запису" class="mr-3">
+                            <i class="fa-solid fa-film text-accent-blue mr-3"></i> Висока якість запису (HD/FullHD+)
+                        </label>
+                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Датчики руху" class="mr-3">
+                            <i class="fa-solid fa-person-running text-accent-blue mr-3"></i> Датчики руху
+                        </label>
+                        <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Зберігання записів" class="mr-3">
+                            <i class="fa-solid fa-cloud-arrow-up text-accent-blue mr-3"></i> Зберігання записів
+                            <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(бажаний період:</span>
+                            <input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition w-16 text-center mt-2 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary"> днів)</span>
+                        </label>
+                        <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                            <input type="checkbox" name="features[]" value="Отримання сповіщень" class="mr-3">
+                            <i class="fa-solid fa-bell text-accent-blue mr-3"></i> Отримання сповіщень
+                             <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(зручний спосіб:</span>
+                             <input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow mt-2 sm:mt-0 sm:ml-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                             <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary">)</span>
+                        </label>
+                    </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="9">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-credit-card"></i> Питання 9: Чи цікавить Вас купівля обладнання замість щомісячної оплати? <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="buy_equipment" value="Так" required class="mr-3"> Так
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="buy_equipment" value="Ні" class="mr-3"> Ні
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="buy_equipment" value="Можливо" class="mr-3"> Можливо, в залежності від умов
+                         </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="10">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-headset"></i> Питання 10: Чи бажаєте Ви отримувати консультацію щодо підбору та налаштування? <span class="text-accent-pink ml-1">*</span></h3>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="consultation" value="Так" required class="mr-3">
+                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="consultation" value="Ні" class="mr-3">
+                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         </label>
+                     </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="11">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-shield-dog"></i> Питання 11: Чи цікавлять Вас інші послуги, пов'язані з безпекою? <span class="text-accent-pink ml-1">*</span></h3>
+                     <p class="input-hint text-sm text-text-secondary mb-4">Наприклад: датчики руху, диму, охоронна сигналізація тощо.</p>
+                     <div class="form-group space-y-3 mb-5">
+                         <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="other_services" value="Так" required class="mr-3">
+                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
+                              <input type="text" name="other_services_details" placeholder="Вкажіть, які саме" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                         </label>
+                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
+                             <input type="radio" name="other_services" value="Ні" class="mr-3">
+                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         </label>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="12">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Питання 12: Ваші побажання та коментарі</h3>
+                     <div class="form-group mb-5">
+                         <label for="comments" class="block mb-2 font-medium text-text-secondary">Розкажіть, що ще важливо для Вас у послузі відеоспостереження?</label>
+                         <textarea id="comments" name="comments" rows="4" placeholder="Напишіть Ваші думки тут..." class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition resize-vertical"></textarea>
+                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                         <button type="button" class="btn btn-submit bg-accent-pink hover:bg-pink-700 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Відправити</button>
+                     </div>
+                </div>
+
+            </form>
+        </section>
+
+        <section id="success-message" class="hidden text-center p-10">
+             <i class="fa-solid fa-circle-check text-6xl text-accent-pink mb-6 block animate-pulse"></i>
+             <h2 class="text-3xl font-bold text-accent-blue mb-4">Дякуємо за Ваші відповіді!</h2>
+             <p class="mb-3 text-lg text-text-secondary">Ваша думка дуже важлива для нас і допоможе зробити послугу "Відеонагляд" ще кращою.</p>
+             <p class="text-lg text-text-secondary">Бажаємо успіху в розіграші камери Imou Bullet 2E!</p>
+             <div class="mt-8">
+                 <a href="#" onclick="location.reload(); return false;" class="btn bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300">Заповнити ще раз</a>
+             </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center mt-auto py-4 text-sm text-text-secondary border-t border-border-color bg-bg-dark/80">
+        © Вечір Телеком, 2025. Всі права захищено.
+     </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DOM Element References ---
+        const introSection = document.getElementById('intro');
+        const surveyFormSection = document.getElementById('survey-form');
+        const successMessageSection = document.getElementById('success-message');
+        const startBtn = document.getElementById('start-survey-btn');
+        const form = document.getElementById('video-survey');
+        const steps = form.querySelectorAll('.survey-step');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const errorContainer = document.getElementById('error-message-container');
+        const errorTextElement = document.getElementById('error-message-text');
+        const totalSteps = steps.length;
+        let currentStep = 1;
+        const history = [1]; // Track visited steps for back navigation
+
+        // --- Helper Functions ---
+
+        /**
+         * Updates the progress bar and text indicator.
+         */
+        function updateProgress() {
+            // Calculate percentage based on current step (0-indexed) vs total steps (0-indexed)
+            const progressPercentage = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
+            progressBar.style.width = `${progressPercentage}%`;
+            progressText.textContent = `Крок ${currentStep} з ${totalSteps}`;
+        }
+
+        /**
+         * Displays a specific survey step by its number.
+         * @param {number} stepNumber - The step number to display (1-indexed).
+         */
+        function showStep(stepNumber) {
+            // Hide all steps
+            steps.forEach(step => step.classList.remove('active'));
+
+            // Find and show the target step
+            const stepToShow = form.querySelector(`.survey-step[data-step="${stepNumber}"]`);
+            if (stepToShow) {
+                stepToShow.classList.add('active');
+                currentStep = stepNumber; // Update global current step
+
+                // Manage "Back" button state
+                const backBtn = stepToShow.querySelector('.btn-back');
+                if (backBtn) {
+                    backBtn.disabled = history.length <= 1; // Disable if it's the first step in history
+                }
+
+                updateProgress(); // Update visual progress
+                hideError(); // Hide any previous errors when changing steps
+                // Scroll to the top of the form for better visibility
+                surveyFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                console.error("Step not found:", stepNumber);
+            }
+        }
+
+        /**
+         * Displays an error message in the dedicated container.
+         * @param {string} message - The error message to display.
+         */
+        function showError(message) {
+            errorTextElement.textContent = message;
+            errorContainer.classList.add('visible');
+             // Scroll error into view if it's off-screen
+            errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        /**
+         * Hides the error message container.
+         */
+        function hideError() {
+            errorContainer.classList.remove('visible');
+            errorTextElement.textContent = '';
+        }
+
+        /**
+         * Validates the inputs within the currently active step.
+         * @param {HTMLElement} currentStepElement - The DOM element of the current step.
+         * @returns {boolean} - True if the step is valid, false otherwise.
+         */
+        function validateStep(currentStepElement) {
+            let isValid = true;
+            let firstInvalidElement = null; // To focus later
+
+            // Clear previous error borders
+            currentStepElement.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+            hideError(); // Clear previous error messages
+
+            // --- Check all required inputs within the current step ---
+            const requiredInputs = currentStepElement.querySelectorAll('[required]');
+            requiredInputs.forEach(input => {
+                // Skip validation for inputs inside non-active steps (shouldn't happen with current logic, but good practice)
+                // Also skip hidden or disabled inputs
+                if (!input.closest('.survey-step.active') || input.offsetParent === null || input.disabled) {
+                    return;
+                }
+
+                let inputValid = true;
+                const inputWrapper = input.closest('label') || input; // Element to highlight
+
+                // --- Radio Button Validation ---
+                if (input.type === 'radio') {
+                    const groupName = input.name;
+                    // Check if *any* radio in this group *within the current step* is checked
+                    const groupChecked = currentStepElement.querySelector(`input[name="${groupName}"]:checked`);
+                    if (!groupChecked) {
+                        inputValid = false;
+                        // Only mark the first radio of the group as invalid for visual feedback
+                        if (!currentStepElement.querySelector(`input[name="${groupName}"].border-red-500`)) {
+                             inputWrapper.classList.add('border', 'border-red-500'); // Highlight the label
+                             if (!firstInvalidElement) firstInvalidElement = input;
+                        }
+                    }
+                }
+                // --- Checkbox Group Validation (e.g., Step 5, Step 8) ---
+                // This logic assumes the *group* is required, meaning at least one checkbox must be checked.
+                // We check this later specifically for Step 5 & 8, as individual checkboxes might not be 'required'.
+                // If a single checkbox *was* required, this would handle it:
+                // else if (input.type === 'checkbox' && !input.checked) {
+                //     inputValid = false;
+                // }
+
+                // --- Text, Number, Textarea Validation ---
+                else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea') && !input.value.trim()) {
+                    inputValid = false;
+                }
+
+                // Mark invalid text/number/textarea inputs
+                if (!inputValid && input.type !== 'radio') {
+                    inputWrapper.classList.add('border-red-500');
+                    if (!firstInvalidElement) firstInvalidElement = input;
+                }
+
+                // Overall step validity
+                if (!inputValid) {
+                    isValid = false;
+                }
+            });
+
+            // --- Specific Validation for Step 5 (Goals - Checkboxes) ---
+            if (currentStepElement.dataset.step === "5") {
+                const goalsCheckedCount = currentStepElement.querySelectorAll('input[name="goals[]"]:checked').length;
+                if (goalsCheckedCount === 0) {
+                     isValid = false;
+                     // Highlight the first checkbox label if none are selected
+                     const firstGoalLabel = currentStepElement.querySelector('input[name="goals[]"]').closest('label');
+                     if (firstGoalLabel) {
+                        firstGoalLabel.classList.add('border', 'border-red-500');
+                        if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="goals[]"]');
+                     }
+                     showError('Будь ласка, оберіть хоча б одну ціль.');
+                } else if (goalsCheckedCount > 2) {
+                     // This is handled by the change listener now, but double-check here if needed.
+                     // isValid = false;
+                     // showError('Будь ласка, оберіть не більше двох цілей.');
+                     // // Optionally highlight all checked ones
+                     // currentStepElement.querySelectorAll('input[name="goals[]"]:checked').forEach(cb => {
+                     //     cb.closest('label').classList.add('border', 'border-red-500');
+                     //     if (!firstInvalidElement) firstInvalidElement = cb;
+                     // });
+                }
+            }
+
+             // --- Specific Validation for Step 8 (Features - Checkboxes) ---
+             if (currentStepElement.dataset.step === "8") {
+                const featuresCheckedCount = currentStepElement.querySelectorAll('input[name="features[]"]:checked').length;
+                if (featuresCheckedCount === 0) {
+                     isValid = false;
+                     const firstFeatureLabel = currentStepElement.querySelector('input[name="features[]"]').closest('label');
+                      if (firstFeatureLabel) {
+                        firstFeatureLabel.classList.add('border', 'border-red-500');
+                         if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="features[]"]');
+                     }
+                     showError('Будь ласка, оберіть хоча б одну важливу функцію.');
+                }
+             }
+
+
+            // --- Validation for Dependent "Other" Text Inputs ---
+            const otherRadiosOrCheckboxes = currentStepElement.querySelectorAll('input[value="Інше"]:checked, input[value="Зберігання записів"]:checked, input[value="Отримання сповіщень"]:checked, input[value="Так"][name="other_services"]:checked');
+            otherRadiosOrCheckboxes.forEach(roc => {
+                const otherInput = roc.closest('label').querySelector('input[type="text"], input[type="number"], textarea');
+                // Check if the related input exists, is enabled (meaning its parent IS checked), and is empty
+                if (otherInput && !otherInput.disabled && !otherInput.value.trim()){
+                    isValid = false;
+                    otherInput.classList.add('border-red-500'); // Highlight the specific text input
+                    if (!firstInvalidElement) firstInvalidElement = otherInput;
+                }
+            });
+
+            // --- Show General Error if Invalid ---
+            if (!isValid && !errorContainer.classList.contains('visible')) { // Avoid showing generic if specific error already shown
+                showError('Будь ласка, заповніть або виберіть значення для всіх обов\'язкових полів, позначених *. ');
+            }
+
+            // Focus the first invalid element for accessibility
+            if (firstInvalidElement) {
+                firstInvalidElement.focus();
+            }
+
+            return isValid;
+        }
+
+
+        // --- Event Handlers ---
+
+        // Start Survey Button
+        startBtn.addEventListener('click', () => {
+            introSection.style.display = 'none';
+            surveyFormSection.style.display = 'block';
+            showStep(1); // Initialize the first step
+        });
+
+        // Form Interactions (Event Delegation)
+        form.addEventListener('click', function(event) {
+            const target = event.target;
+
+            // --- "Next" Button Click ---
+            if (target.classList.contains('btn-next')) {
+                const currentStepElement = target.closest('.survey-step');
+                const currentStepNumber = parseInt(currentStepElement.dataset.step);
+
+                // Validate the current step before proceeding
+                if (!validateStep(currentStepElement)) {
+                    return; // Stop if validation fails
+                }
+
+                let nextStepNumber = currentStepNumber + 1; // Default next step
+
+                // --- Conditional Logic: Step 3 (Using Now?) ---
+                // Determines whether to go to Step 4 (Reason Not Using) or Step 5 (Goals)
+                if (currentStepNumber === 3) {
+                    const usingNowChecked = form.querySelector('input[name="using_now"]:checked');
+                    if (usingNowChecked) {
+                        nextStepNumber = parseInt(usingNowChecked.dataset.nextStep); // Get target from data attribute
+                    } else {
+                        // Should not happen due to validation, but good to have a fallback
+                        console.warn("No option selected in step 3");
+                        showError("Будь ласка, оберіть варіант у кроці 3.");
+                        return;
+                    }
+                }
+                // --- Conditional Logic: Step 4 (Reason Not Using) ---
+                // Step 4 *always* skips to Step 5 (Goals)
+                else if (currentStepNumber === 4) {
+                    nextStepNumber = 5;
+                }
+
+                // Navigate if the next step is valid
+                if (nextStepNumber <= totalSteps) {
+                    // Add to history only if moving forward to a step not already the last in history
+                    if (history[history.length - 1] !== nextStepNumber) {
+                         history.push(nextStepNumber);
+                    }
+                    showStep(nextStepNumber);
+                } else {
+                    // Should be handled by the "Submit" button on the last step
+                    console.log("Tried to go 'Next' beyond the last step.");
+                }
+            }
+
+            // --- "Back" Button Click ---
+            else if (target.classList.contains('btn-back')) {
+                if (history.length > 1) {
+                    history.pop(); // Remove current step from history
+                    const previousStepNumber = history[history.length - 1]; // Get the new last step
+                    showStep(previousStepNumber);
+                }
+            }
+
+            // --- "Submit" Button Click (Last Step) ---
+            else if (target.classList.contains('btn-submit')) {
+                 const currentStepElement = target.closest('.survey-step');
+                 // Final validation of the last step
+                 if (!validateStep(currentStepElement)) {
+                    return; // Stop if validation fails
+                 }
+
+                console.log('Form submitted!');
+
+                // --- Form Data Collection ---
+                const formData = new FormData(form);
+                const data = {};
+                // Clean up data: remove empty 'other' fields, handle checkbox arrays
+                const features = [];
+                const goals = [];
+                for (let [key, value] of formData.entries()) {
+                    if (key.endsWith('_other') && value.trim() === '') continue; // Skip empty 'other'
+                    if (key === 'features[]') {
+                        features.push(value);
+                        continue;
+                    }
+                     if (key === 'goals[]') {
+                        goals.push(value);
+                        continue;
+                    }
+                    // Add other fields directly
+                     data[key] = value;
+                }
+                 if (features.length > 0) data['features'] = features;
+                 if (goals.length > 0) data['goals'] = goals;
+
+                console.log("Collected Form Data:", JSON.stringify(data, null, 2));
+
+                // --- !!! IMPORTANT: Send data to server here !!! ---
+                // Example using fetch (replace with your actual endpoint and method)
+                /*
+                fetch('/your-server-endpoint', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Or response.text() depending on server response
+                })
+                .then(result => {
+                    console.log('Success:', result);
+                    // Show success message ONLY after successful submission
+                    surveyFormSection.style.display = 'none';
+                    successMessageSection.style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                    // Show an error message to the user
+                    showError('Виникла помилка під час відправлення форми. Спробуйте ще раз.');
+                });
+                */
+
+                // --- For Demo: Immediately show success message ---
+                surveyFormSection.style.display = 'none';
+                successMessageSection.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // --- Dynamic Input Handling (Enable/Disable "Other" fields) ---
+        form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const label = this.closest('label');
+                if (!label) return; // Should always have a label
+
+                // Find related text/number/textarea input within the same label or a closely associated container
+                // This selector might need adjustment based on exact HTML structure variations
+                const otherInput = label.querySelector('input[type="text"], input[type="number"], textarea');
+
+                // --- Radio Button Specific Logic ---
+                // When a radio changes, disable *all* 'other' inputs in its group first
+                if (this.type === 'radio') {
+                    const radioGroupName = this.name;
+                    form.querySelectorAll(`input[type="radio"][name="${radioGroupName}"]`).forEach(radioInGroup => {
+                        const relatedLabel = radioInGroup.closest('label');
+                        if (!relatedLabel) return;
+                        const relatedOtherInput = relatedLabel.querySelector('input[type="text"], input[type="number"], textarea');
+                        if (relatedOtherInput) {
+                            relatedOtherInput.disabled = true;
+                            relatedOtherInput.required = false;
+                            relatedOtherInput.classList.remove('border-red-500'); // Clear validation state
+                            // relatedOtherInput.value = ''; // Optionally clear value
+                        }
+                    });
+                }
+
+                // --- General Logic for Enabling/Disabling the specific 'other' input ---
+                if (otherInput) {
+                    const shouldBeEnabled = this.checked;
+                    otherInput.disabled = !shouldBeEnabled;
+                    otherInput.required = shouldBeEnabled; // Make required only if its parent is checked
+
+                    if (!shouldBeEnabled) {
+                        otherInput.value = ''; // Clear value if unchecked/disabled
+                        otherInput.classList.remove('border-red-500'); // Clear validation state
+                    } else {
+                         // Don't auto-focus on load, only on user interaction
+                         if (event && event.type === 'change') { // Check if triggered by user change
+                            otherInput.focus();
+                         }
+                    }
+                }
+            });
+
+            // --- Initial state check on page load (for browser pre-fill/refresh) ---
+            // Trigger the change handler logic without an event object to set initial state
+             input.dispatchEvent(new Event('change', { bubbles: false })); // Use 'bubbles: false' to avoid triggering form-level listener
+        });
+
+
+        // --- Specific Question Logic ---
+
+        // Limit checkbox selection for Question 5 (Goals)
+        const goalsCheckboxes = form.querySelectorAll('input[name="goals[]"]');
+        goalsCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const checkedCount = form.querySelectorAll('input[name="goals[]"]:checked').length;
+                if (checkedCount > 2) {
+                    // Instead of alert, show message in the error container
+                    showError("Будь ласка, оберіть не більше двох цілей.");
+                    cb.checked = false; // Revert the last check
+
+                    // Optional: Re-enable the 'other' input if the 'other' checkbox was just unchecked
+                     const label = cb.closest('label');
+                     if (label && cb.value === 'Інше') {
+                         const otherInput = label.querySelector('input[type="text"]');
+                         if(otherInput) {
+                            otherInput.disabled = true;
+                            otherInput.required = false;
+                            otherInput.value = '';
+                            otherInput.classList.remove('border-red-500');
+                         }
+                     }
+                } else {
+                    // If count is valid, ensure error message is hidden if it was related to this
+                    if (errorTextElement.textContent.includes("двох цілей")) {
+                        hideError();
+                    }
+                }
+            });
+        });
+
+        // --- Initialize ---
+        updateProgress(); // Set initial progress bar state
+
+    });
+</script>
+
+</body>
+</html>
