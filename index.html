@@ -91,8 +91,35 @@
         label.border-red-500 { border-color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
 
         /* Styles for conditionally shown fields */
-        .conditional-fields { display: none; }
-        .conditional-fields.visible { display: block; animation: fadeIn 0.5s; }
+        .conditional-fields { display: none; } /* Hidden by default */
+        .conditional-fields.visible { display: block; animation: fadeIn 0.5s; } /* Shown with animation */
+
+        /* Style for speech input button */
+        #start-speech-btn {
+            background-color: theme('colors.input-bg');
+            border: 1px solid theme('colors.border-color');
+            color: theme('colors.text-secondary');
+            padding: 0.5rem;
+            margin-left: 0.5rem;
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #start-speech-btn:hover {
+            background-color: theme('colors.input-bg-hover');
+            color: theme('colors.accent-blue');
+        }
+        #start-speech-btn.listening {
+            background-color: theme('colors.accent-pink');
+            color: theme('colors.text-light');
+            border-color: theme('colors.accent-pink');
+        }
+        #speech-status {
+            font-size: 0.75rem; /* text-xs */
+            color: theme('colors.text-secondary');
+            margin-top: 0.25rem; /* mt-1 */
+            height: 1em; /* Reserve space */
+        }
 
     </style>
 </head>
@@ -188,13 +215,13 @@
                      </div>
 
                      <div id="non-subscriber-fields" class="conditional-fields mt-6 pt-4 border-t border-border-color/50">
-                          <p class="input-hint text-sm text-text-secondary mb-4">Будь ласка, вкажіть контактні дані, щоб ми могли повідомити Вас про виграш у розіграші камери:</p>
+                          <p class="input-hint text-sm text-text-secondary mb-4">Будь ласка, вкажіть контактні дані, щоб ми могли повідомити Вас про **перемогу** у розіграші камери:</p>
                          <div class="form-group mb-5">
                              <label for="phone-number" class="block mb-2 font-medium text-text-secondary flex items-center">
                                  <i class="fa-solid fa-phone"></i> Ваш контактний номер телефону
                              </label>
                              <input type="tel" id="phone-number" name="phone_number" placeholder="+380 XX XXX XX XX" class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
-                             <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі виграшу.</p>
+                             <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі **перемоги**.</p>
                          </div>
                          <div class="text-center my-2 text-text-secondary font-medium">АБО</div>
                          <div class="form-group mb-5">
@@ -202,7 +229,7 @@
                                 <i class="fa-solid fa-at"></i> Ваш Email
                             </label>
                             <input type="email" id="email-for-prize" name="email_for_prize" placeholder="example@email.com" class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
-                             <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі виграшу.</p>
+                             <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі **перемоги**.</p>
                         </div>
                         <p class="input-hint text-sm text-red-400 mb-4">** Необхідно вказати принаймні один контакт: телефон АБО email.</p>
                      </div>
@@ -292,7 +319,9 @@
                  </div>
 
                  <div class="survey-step" data-step="5">
-                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Питання 5: Які Ваші основні цілі від відеоспостереження?</h3>
+                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye"></i> Які Ваші основні цілі використання послуги відеоспостереження
+                      </h3>
                       <p class="input-hint text-sm text-text-secondary mb-4">Оберіть 1-2 найважливіші пункти. <span class="text-accent-pink ml-1">*</span></p>
                       <div class="form-group space-y-3 mb-5">
                            <label class="checkbox-label">
@@ -324,32 +353,32 @@
                  </div>
 
                  <div class="survey-step" data-step="6">
-                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Питання 6: Бажана модель оплати та бюджет <span class="text-accent-pink ml-1">*</span></h3>
-                      <p class="input-hint text-sm text-text-secondary mb-4">Який варіант оплати послуги відеоспостереження для Вас найзручніший?</p>
+                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Питання 6: Модель оплати та бюджет <span class="text-accent-pink ml-1">*</span></h3>
+                      <p class="input-hint text-sm text-text-secondary mb-4">Який підхід до оплати та щомісячний бюджет на сервісну частину (технічне обслуговування, заміна обладнання) для Вас оптимальний?<span class="text-accent-pink ml-1">*</span></p>
                       <div class="form-group space-y-3 mb-5">
                            <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="rent_under_300" required>
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна оренда (до 300 грн/міс)
+                               <input type="radio" name="payment_model_budget" value="purchase" required>
+                               <i class="fa-solid fa-credit-card text-accent-blue"></i> Одноразова купівля обладнання(з оплатою за технічне обслуговування по факту)
+                           </label>
+                           <label class="radio-label">
+                               <input type="radio" name="payment_model_budget" value="rent_under_300">
+                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата до 300 грн (оренда обладнання + сервіс)
                            </label>
                            <label class="radio-label">
                                <input type="radio" name="payment_model_budget" value="rent_300_500">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна оренда (300-500 грн/міс)
+                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 300-500 грн (оренда обладнання + сервіс)
                            </label>
                            <label class="radio-label">
                                <input type="radio" name="payment_model_budget" value="rent_500_800">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна оренда (500-800 грн/міс)
+                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 500-800 грн (оренда обладнання + сервіс)
                            </label>
                            <label class="radio-label">
                                <input type="radio" name="payment_model_budget" value="rent_over_800">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна оренда (більше 800 грн/міс)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="purchase">
-                               <i class="fa-solid fa-credit-card text-accent-blue"></i> Одноразова купівля обладнання
+                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата > 800 грн (оренда обладнання + сервіс)
                            </label>
                            <label class="radio-label">
                                <input type="radio" name="payment_model_budget" value="undecided">
-                               <i class="fa-solid fa-circle-question text-accent-blue"></i> Не визначився / Залежить від умов
+                               <i class="fa-solid fa-circle-question text-accent-blue"></i> Важко сказати / Залежить від умов
                            </label>
                       </div>
                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -383,25 +412,25 @@
                          <label class="block mb-3 font-medium text-text-secondary"><i class="fa-solid fa-list-check mr-2"></i>Бажані функції <span class="text-accent-pink ml-1">*</span></label>
                          <div class="form-group space-y-3 mb-5">
                               <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Нічна зйомка" required> <i class="fa-solid fa-moon text-accent-blue"></i> Нічна зйомка
+                                  <input type="checkbox" name="features[]" value="Нічна зйомка"> <i class="fa-solid fa-moon text-accent-blue"></i> Нічна зйомка
                               </label>
                               <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Віддалений доступ" required> <i class="fa-solid fa-mobile-screen-button text-accent-blue"></i> Віддалений доступ (телефон/комп'ютер)
+                                  <input type="checkbox" name="features[]" value="Віддалений доступ"> <i class="fa-solid fa-mobile-screen-button text-accent-blue"></i> Віддалений доступ (телефон/комп'ютер)
                               </label>
                               <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Висока якість запису" required> <i class="fa-solid fa-film text-accent-blue"></i> Висока якість запису (HD/FullHD+)
+                                  <input type="checkbox" name="features[]" value="Висока якість запису"> <i class="fa-solid fa-film text-accent-blue"></i> Висока якість запису (HD/FullHD+)
                               </label>
                               <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Датчики руху" required> <i class="fa-solid fa-person-running text-accent-blue"></i> Датчики руху
+                                  <input type="checkbox" name="features[]" value="Датчики руху"> <i class="fa-solid fa-person-running text-accent-blue"></i> Датчики руху
                               </label>
                               <label class="checkbox-label flex-wrap">
-                                  <input type="checkbox" name="features[]" value="Зберігання записів" required> <i class="fa-solid fa-cloud-arrow-up text-accent-blue"></i> Зберігання записів
+                                  <input type="checkbox" name="features[]" value="Зберігання записів"> <i class="fa-solid fa-cloud-arrow-up text-accent-blue"></i> Зберігання записів
                                   <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(бажаний період:</span>
                                   <input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 w-16 text-center mt-2 sm:mt-0" disabled>
                                   <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary"> днів)</span>
                               </label>
                               <label class="checkbox-label flex-wrap">
-                                  <input type="checkbox" name="features[]" value="Отримання сповіщень" required> <i class="fa-solid fa-bell text-accent-blue"></i> Отримання сповіщень
+                                  <input type="checkbox" name="features[]" value="Отримання сповіщень"> <i class="fa-solid fa-bell text-accent-blue"></i> Отримання сповіщень
                                    <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(зручний спосіб:</span>
                                    <input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 mt-2 sm:mt-0 sm:ml-1" disabled>
                                    <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary">)</span>
@@ -450,8 +479,11 @@
                                    <input type="checkbox" id="comm-viber" name="communication_prefs[]" value="viber">
                                    <i class="fab fa-viber text-purple-500"></i> Viber
                               </label>
-                              <span class="comm-pref-note">Ми будемо використовувати номер телефону, вказаний Вами раніше.</span>
-                          </div>
+                              <div id="viber-phone-container" class="conditional-input-container hidden">
+                                  <label for="viber-phone-number" class="block mb-1 text-sm font-medium text-text-secondary">Номер телефону для Viber:<span class="text-accent-pink ml-1">*</span></label>
+                                  <input type="tel" id="viber-phone-number" name="viber_phone_number" class="form-input-conditional" placeholder="+380 XX XXX XX XX">
+                              </div>
+                              </div>
                           <div>
                               <label class="checkbox-label">
                                    <input type="checkbox" id="comm-telegram" name="communication_prefs[]" value="telegram">
@@ -478,7 +510,7 @@
                                    <input type="checkbox" id="comm-sms" name="communication_prefs[]" value="sms">
                                    <i class="fa-solid fa-comment-sms text-green-500"></i> SMS
                               </label>
-                              <span class="comm-pref-note">На номер телефону, вказаний раніше.</span>
+                              <span class="comm-pref-note">На номер телефону, вказаний раніше (якщо Ви не абонент і вказали його на кроці 1).</span>
                           </div>
                            <div class="pt-3">
                                 <label class="checkbox-label">
@@ -497,8 +529,13 @@
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Питання 10: Ваші побажання та коментарі</h3>
                       <div class="form-group mb-5">
                            <label for="comments" class="block mb-2 font-medium text-text-secondary">Розкажіть, що ще важливо для Вас у послузі відеоспостереження?</label>
-                           <textarea id="comments" name="comments" rows="4" placeholder="Напишіть Ваші думки тут..." class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition resize-vertical"></textarea>
-                      </div>
+                           <div class="flex items-start">
+                               <textarea id="comments" name="comments" rows="4" placeholder="Напишіть Ваші думки тут або використайте мікрофон..." class="flex-grow p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition resize-vertical"></textarea>
+                               <button type="button" id="start-speech-btn" title="Голосовий ввід" class="flex-shrink-0">
+                                   <i class="fa-solid fa-microphone"></i>
+                               </button>
+                           </div>
+                           <div id="speech-status" class="text-xs text-text-secondary mt-1 h-4"></div> </div>
                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
                            <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
                            <button type="button" class="btn btn-submit bg-accent-pink hover:bg-pink-700 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Відправити</button>
@@ -529,6 +566,7 @@
     </footer>
 
 <script>
+    // JavaScript logic updated for Step 1, Step 9 (Viber), Step 10 (Speech) and validation
     document.addEventListener('DOMContentLoaded', function() {
         // --- DOM Element References ---
         const introSection = document.getElementById('intro');
@@ -541,9 +579,9 @@
         const progressText = document.getElementById('progress-text');
         const errorContainer = document.getElementById('error-message-container');
         const errorTextElement = document.getElementById('error-message-text');
-        const totalSteps = steps.length; // Now 10 steps
+        const totalSteps = steps.length; // 10 steps
         let currentStep = 1;
-        const history = [1]; // Track visited steps for back navigation
+        const history = [1];
 
         // --- References for Step 1 ---
         const subscriberRadios = form.querySelectorAll('input[name="is_subscriber"]');
@@ -551,36 +589,53 @@
         const nonSubscriberFields = document.getElementById('non-subscriber-fields');
         const contractNumberInput = document.getElementById('contract-number');
         const contractDontRememberCheckbox = document.getElementById('contract-dont-remember');
-        const phoneNumberInput = document.getElementById('phone-number'); // Now potentially optional
+        const phoneNumberInput = document.getElementById('phone-number');
         const emailForPrizeInput = document.getElementById('email-for-prize');
 
-        // --- References for Communication Preferences (Step 9 - was 10) ---
+        // --- References for Communication Preferences (Step 9) ---
         const commViberCheckbox = document.getElementById('comm-viber');
         const commTelegramCheckbox = document.getElementById('comm-telegram');
         const commEmailCheckbox = document.getElementById('comm-email');
         const commSmsCheckbox = document.getElementById('comm-sms');
         const commNoneCheckbox = document.getElementById('comm-none');
+        const viberPhoneContainer = document.getElementById('viber-phone-container'); // New
+        const viberPhoneNumberInput = document.getElementById('viber-phone-number'); // New
         const telegramContainer = document.getElementById('telegram-username-container');
         const emailContainer = document.getElementById('email-input-container');
-        const emailInput = document.getElementById('email-address'); // Email for regular comms
+        const emailInput = document.getElementById('email-address');
         const telegramInput = document.getElementById('telegram-username');
         const communicationCheckboxes = [commViberCheckbox, commTelegramCheckbox, commEmailCheckbox, commSmsCheckbox];
 
-        // --- References for Additional Services (Step 8 - was 9) ---
+        // --- References for Additional Services (Step 8) ---
         const interestedOtherServicesCheckbox = document.getElementById('interested-other-services-cb');
         const otherServicesDetailsContainer = document.getElementById('other-services-details-container');
         const otherServicesDetailsInput = document.getElementById('other_services_details');
 
-        // --- Helper Functions ---
+        // --- References for Speech Input (Step 10) ---
+        const commentsTextarea = document.getElementById('comments');
+        const speechButton = document.getElementById('start-speech-btn');
+        const speechStatus = document.getElementById('speech-status');
+        let recognition;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let isRecognitionSupported = false;
+        if (SpeechRecognition) {
+            isRecognitionSupported = true;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'uk-UA';
+            recognition.interimResults = false;
+        } else {
+             if(speechButton) speechButton.style.display = 'none';
+             if(speechStatus) speechStatus.textContent = 'Голосовий ввід не підтримується.';
+        }
 
-        /** Updates the progress bar and text indicator. */
+        // --- Helper Functions ---
         function updateProgress() {
             const progressPercentage = totalSteps > 1 ? ((currentStep -1) / (totalSteps -1)) * 100 : (currentStep >= totalSteps ? 100 : 0);
             progressBar.style.width = `${progressPercentage}%`;
             progressText.textContent = `Крок ${currentStep} з ${totalSteps}`;
         }
 
-        /** Displays a specific survey step by its number. */
         function showStep(stepNumber) {
             steps.forEach(step => step.classList.remove('active'));
             const stepToShow = form.querySelector(`.survey-step[data-step="${stepNumber}"]`);
@@ -591,42 +646,35 @@
                 if (backBtn) backBtn.disabled = history.length <= 1;
                 updateProgress();
                 hideError();
-                // Scroll slightly above the form section for better context
-                const headerHeight = document.querySelector('header')?.offsetHeight || 60; // Estimate header height
-                const elementTop = surveyFormSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20; // Adjust offset
+                const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                const elementTop = surveyFormSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
                  window.scrollTo({ top: elementTop, behavior: 'smooth' });
             } else {
                 console.error("Step not found:", stepNumber);
             }
         }
 
-        /** Displays an error message. */
         function showError(message) {
             errorTextElement.textContent = message;
             errorContainer.classList.add('visible');
             errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        /** Hides the error message container. */
         function hideError() {
             errorContainer.classList.remove('visible');
             errorTextElement.textContent = '';
         }
 
-        /** Basic email format validation. */
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
 
-         /** Basic phone format validation (simple check for digits/plus/hyphens). */
          function isValidPhone(phone) {
-            // Allows digits, +, -, spaces, parentheses. Requires at least 7 digits.
             const phoneRegex = /^[+\-\s\(\)0-9]{7,}$/;
             const digitCount = (phone.match(/\d/g) || []).length;
             return phoneRegex.test(phone) && digitCount >= 7;
          }
-
 
         /** Validates the inputs within the currently active step. */
         function validateStep(currentStepElement) {
@@ -654,7 +702,7 @@
                         if (!firstInvalidElement) firstInvalidElement = form.querySelector('input[name="is_subscriber"]');
                     }
                 } else if (isSubscriberSelected.value === 'no') {
-                    // If "No", require Phone OR Email
+                    // If "No", require Phone OR Email for prize
                     const phoneValue = phoneNumberInput.value.trim();
                     const emailValue = emailForPrizeInput.value.trim();
                     let contactValid = false;
@@ -664,43 +712,44 @@
                     if (phoneValue && isValidPhone(phoneValue)) {
                         contactValid = true;
                     } else if (phoneValue && !isValidPhone(phoneValue)) {
-                        phoneFormatValid = false; // Invalid format if filled
+                        phoneFormatValid = false;
                     }
 
                     if (emailValue && isValidEmail(emailValue)) {
                         contactValid = true;
                     } else if (emailValue && !isValidEmail(emailValue)) {
-                        emailFormatValid = false; // Invalid format if filled
+                        emailFormatValid = false;
                     }
 
                     if (!contactValid) {
                          isValid = false;
-                         showError('Будь ласка, вкажіть дійсний номер телефону АБО email для повідомлення про виграш.');
-                         // Highlight both fields if neither is validly filled
-                         if (!phoneValue && !emailValue) {
+                         showError('Будь ласка, вкажіть дійсний номер телефону АБО email для повідомлення про перемогу.');
+                         if (!phoneFormatValid && phoneValue) {
+                             phoneNumberInput.classList.add('border-red-500');
+                             if (!firstInvalidElement) firstInvalidElement = phoneNumberInput;
+                         } else if (!emailFormatValid && emailValue) {
+                             emailForPrizeInput.classList.add('border-red-500');
+                             if (!firstInvalidElement) firstInvalidElement = emailForPrizeInput;
+                         } else {
                              phoneNumberInput.classList.add('border-red-500');
                              emailForPrizeInput.classList.add('border-red-500');
                              if (!firstInvalidElement) firstInvalidElement = phoneNumberInput;
-                         } else if (!phoneFormatValid) {
+                         }
+                    } else {
+                         if (!phoneFormatValid && phoneValue) {
+                             isValid = false;
+                             showError('Будь ласка, перевірте формат номеру телефону.');
                              phoneNumberInput.classList.add('border-red-500');
                              if (!firstInvalidElement) firstInvalidElement = phoneNumberInput;
-                         } else if (!emailFormatValid) {
+                         }
+                         if (!emailFormatValid && emailValue) {
+                             isValid = false;
+                             showError('Будь ласка, перевірте формат Email адреси.');
                              emailForPrizeInput.classList.add('border-red-500');
                              if (!firstInvalidElement) firstInvalidElement = emailForPrizeInput;
                          }
-                    } else if (!phoneFormatValid && phoneValue) { // Contact valid via email, but phone format wrong
-                         isValid = false;
-                         showError('Будь ласка, перевірте формат номеру телефону.');
-                         phoneNumberInput.classList.add('border-red-500');
-                         if (!firstInvalidElement) firstInvalidElement = phoneNumberInput;
-                    } else if (!emailFormatValid && emailValue) { // Contact valid via phone, but email format wrong
-                         isValid = false;
-                         showError('Будь ласка, перевірте формат Email адреси.');
-                         emailForPrizeInput.classList.add('border-red-500');
-                         if (!firstInvalidElement) firstInvalidElement = emailForPrizeInput;
                     }
                 }
-                // No specific validation needed if "Yes" is selected, as contract number is optional.
             } else {
                 // --- General Validation for other steps ---
                 const requiredInputs = currentStepElement.querySelectorAll('[required]');
@@ -720,7 +769,7 @@
                                 if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector(`input[name="${groupName}"]`);
                             }
                         }
-                    } else if (input.type === 'checkbox' && input.name.endsWith('[]')) { // Required Checkbox Group (e.g., Features)
+                    } else if (input.type === 'checkbox' && input.hasAttribute('required') && input.name.endsWith('[]')) {
                          const groupName = input.name;
                          if (currentStepElement.querySelectorAll(`input[name="${groupName}"]:checked`).length === 0) {
                             inputValid = false;
@@ -730,12 +779,18 @@
                                  if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector(`input[name="${groupName}"]`);
                             }
                          }
-                    } else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea' || input.type === 'email' || input.type === 'tel') && !input.value.trim()) {
+                    } else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea' || input.type === 'email' || input.type === 'tel') && input.hasAttribute('required') && !input.value.trim()) {
                         inputValid = false;
-                    } else if (input.type === 'email' && input.value.trim() && !isValidEmail(input.value.trim())) {
+                    } else if (input.type === 'email' && input.hasAttribute('required') && input.value.trim() && !isValidEmail(input.value.trim())) {
+                        // Validation for required email fields (like comms email)
                         inputValid = false;
                         showError('Будь ласка, введіть дійсну адресу електронної пошти.');
+                    } else if (input.type === 'tel' && input.hasAttribute('required') && input.value.trim() && !isValidPhone(input.value.trim())) {
+                        // Validation for required phone fields (like Viber phone)
+                         inputValid = false;
+                         showError('Будь ласка, введіть дійсний номер телефону.');
                     }
+
 
                     if (!inputValid && inputWrapper) {
                          inputWrapper.classList.add('border-red-500');
@@ -748,7 +803,7 @@
             // --- Specific Step Validations (Continued) ---
             if (currentStepNumber === 5) { // Goals
                 const goalsCheckedCount = currentStepElement.querySelectorAll('input[name="goals[]"]:checked').length;
-                 if (goalsCheckedCount === 0 && isValid) { // Check only if other required fields passed
+                 if (goalsCheckedCount === 0 && isValid) {
                      isValid = false;
                      showError('Будь ласка, оберіть хоча б одну ціль.');
                      const firstGoalLabel = currentStepElement.querySelector('input[name="goals[]"]').closest('label');
@@ -760,23 +815,22 @@
                 }
             } else if (currentStepNumber === 7) { // Combined Step (Features part validation)
                   const featuresCheckedCount = currentStepElement.querySelectorAll('input[name="features[]"]:checked').length;
-                  if (featuresCheckedCount === 0 && isValid) { // Check only if other required fields (camera count) passed
+                  if (featuresCheckedCount === 0 && isValid) {
                       isValid = false;
                       showError('Будь ласка, оберіть хоча б одну бажану функцію.');
                       const firstFeatureLabel = currentStepElement.querySelector('input[name="features[]"]').closest('label');
                        if (firstFeatureLabel) { firstFeatureLabel.classList.add('border-red-500'); if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="features[]"]'); }
                   }
-             } else if (currentStepNumber === 9) { // Communication Prefs (Email validation if checked)
+             } else if (currentStepNumber === 9) { // Communication Prefs (Email/Viber validation if checked)
                  if (commEmailCheckbox && commEmailCheckbox.checked && emailInput && !emailInput.value.trim()) {
-                     isValid = false;
-                     showError('Будь ласка, вкажіть Вашу Email адресу, оскільки Ви обрали цей канал.');
-                     emailInput.classList.add('border-red-500');
-                     if (!firstInvalidElement) firstInvalidElement = emailInput;
+                     // Handled by general required check
                  } else if (commEmailCheckbox && commEmailCheckbox.checked && emailInput && emailInput.value.trim() && !isValidEmail(emailInput.value.trim())) {
-                     isValid = false;
-                     // Error message already set by general email validation check
-                     emailInput.classList.add('border-red-500');
-                     if (!firstInvalidElement) firstInvalidElement = emailInput;
+                     // Handled by general email format check
+                 }
+                 if (commViberCheckbox && commViberCheckbox.checked && viberPhoneNumberInput && !viberPhoneNumberInput.value.trim()) {
+                    // Handled by general required check
+                 } else if (commViberCheckbox && commViberCheckbox.checked && viberPhoneNumberInput && viberPhoneNumberInput.value.trim() && !isValidPhone(viberPhoneNumberInput.value.trim())) {
+                     // Handled by general phone format check
                  }
              }
 
@@ -789,12 +843,11 @@
                 { checkboxSelector: 'input[name="features[]"][value="Отримання сповіщень"]:checked', textInputName: 'notification_method' },
                 { checkboxSelector: 'input[name="interested_other_services"][value="yes"]:checked', textInputName: 'other_services_details' }
             ];
-            if (isValid) { // Only check these if basic requirements are met
+            if (isValid) {
                 otherInputsLogic.forEach(logic => {
                      const checkbox = currentStepElement.querySelector(logic.checkboxSelector);
                      if (checkbox) {
                          const textInput = currentStepElement.querySelector(`[name="${logic.textInputName}"]`);
-                         // Check if the corresponding text input is required (which it is if the checkbox is checked) and empty
                          if (textInput && textInput.required && !textInput.value.trim()) {
                              isValid = false;
                              showError(`Будь ласка, заповніть поле "${textInput.placeholder || logic.textInputName}" оскільки Ви обрали відповідну опцію.`);
@@ -834,13 +887,12 @@
                 if (!validateStep(currentStepElement)) return;
 
                 let nextStepNumber = currentStepNumber + 1;
-                // Skip step 4 if user is current subscriber or answered "Yes" in step 3
                 if (currentStepNumber === 3) {
                     const usingNowChecked = form.querySelector('input[name="using_now"]:checked');
-                    if (usingNowChecked) nextStepNumber = parseInt(usingNowChecked.dataset.nextStep); // 4 or 5
-                    else return; // Should be caught by validation
+                    if (usingNowChecked) nextStepNumber = parseInt(usingNowChecked.dataset.nextStep);
+                    else return;
                 } else if (currentStepNumber === 4) {
-                    nextStepNumber = 5; // Always go to 5 after 4
+                    nextStepNumber = 5;
                 }
 
                 if (nextStepNumber <= totalSteps) {
@@ -858,45 +910,32 @@
                 console.log('Form submitted!');
                 const formData = new FormData(form);
                 const data = {};
-                // Consolidate data collection
                 formData.forEach((value, key) => {
-                    if (key.endsWith('[]')) { // Handle checkbox groups
+                    if (key.endsWith('[]')) {
                         if (!data[key]) data[key] = [];
                         data[key].push(value);
-                    } else if (key.endsWith('_other') || key === 'storage_days' || key === 'notification_method' || key === 'other_services_details' || key === 'telegram_username' || key === 'comments' || key === 'contract_number') {
-                         // Include optional text fields only if they have a value
+                    } else if (key.endsWith('_other') || key === 'storage_days' || key === 'notification_method' || key === 'other_services_details' || key === 'telegram_username' || key === 'comments' || key === 'contract_number' || key === 'phone_number' || key === 'email_for_prize' || key === 'viber_phone_number') {
                          if (value.trim() !== '') data[key] = value.trim();
                     } else if (key === 'needs_consultation' || key === 'interested_other_services' || key === 'communication_prefs_optout' || key === 'contract_dont_remember') {
-                        // Handle single checkboxes (store as true if present)
-                         data[key] = (value === 'yes'); // Assuming value is 'yes'
-                    } else if (key === 'email_for_prize') {
-                         if (value.trim() !== '') data[key] = value.trim(); // Include optional email if filled
-                    }
-                     else {
-                        // Include other fields (radio buttons, required text/tel)
+                         data[key] = (value === 'yes');
+                    } else {
                         data[key] = value;
                     }
                 });
 
-                // Clean up empty arrays
-                ['goals[]', 'features[]', 'communication_prefs[]'].forEach(arrKey => {
-                    if (data[arrKey] && data[arrKey].length === 0) delete data[arrKey];
-                });
-                 // Remove specific optional fields if they ended up empty after trimming
-                 ['contract_number', 'telegram_username', 'email_for_prize', 'comments', 'storage_days', 'notification_method', 'other_services_details', 'premise_type_other', 'reason_not_using_other', 'goals_other'].forEach(optKey => {
-                    if (data[optKey] === '') delete data[optKey];
-                 });
-                 // Remove _other fields if their corresponding radio/checkbox wasn't selected (more robust)
-                 if(data['premise_type'] !== 'Інше') delete data['premise_type_other'];
-                 if(data['reason_not_using'] !== 'Інше') delete data['reason_not_using_other'];
-                 if(!data['goals[]'] || !data['goals[]'].includes('Інше')) delete data['goals_other'];
-                 if(!data['features[]'] || !data['features[]'].includes('Зберігання записів')) delete data['storage_days'];
-                 if(!data['features[]'] || !data['features[]'].includes('Отримання сповіщень')) delete data['notification_method'];
-                 if(!data['interested_other_services']) delete data['other_services_details'];
+                ['goals[]', 'features[]', 'communication_prefs[]'].forEach(arrKey => { if (data[arrKey] && data[arrKey].length === 0) delete data[arrKey]; });
+                ['contract_number', 'telegram_username', 'email_for_prize', 'comments', 'storage_days', 'notification_method', 'other_services_details', 'premise_type_other', 'reason_not_using_other', 'goals_other', 'phone_number', 'viber_phone_number'].forEach(optKey => { if (data[optKey] === '') delete data[optKey]; });
+                if(data['premise_type'] !== 'Інше') delete data['premise_type_other'];
+                if(data['reason_not_using'] !== 'Інше') delete data['reason_not_using_other'];
+                if(!data['goals[]'] || !data['goals[]'].includes('Інше')) delete data['goals_other'];
+                if(!data['features[]'] || !data['features[]'].includes('Зберігання записів')) delete data['storage_days'];
+                if(!data['features[]'] || !data['features[]'].includes('Отримання сповіщень')) delete data['notification_method'];
+                if(!data['interested_other_services']) delete data['other_services_details'];
+                if(data['is_subscriber'] === 'yes') { delete data['phone_number']; delete data['email_for_prize']; }
+                if(!data['communication_prefs[]'] || !data['communication_prefs[]'].includes('viber')) delete data['viber_phone_number'];
 
 
                 console.log("Collected Form Data:", JSON.stringify(data, null, 2));
-                // --- Demo Submit ---
                 surveyFormSection.style.display = 'none';
                 successMessageSection.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -912,21 +951,15 @@
                 subscriberFields.classList.toggle('visible', isSubscriber);
                 nonSubscriberFields.classList.toggle('visible', !isSubscriber);
 
-                // Reset fields in the hidden section
                 if (isSubscriber) {
-                    phoneNumberInput.value = '';
-                    emailForPrizeInput.value = '';
-                    phoneNumberInput.classList.remove('border-red-500');
-                    emailForPrizeInput.classList.remove('border-red-500');
+                    phoneNumberInput.value = ''; emailForPrizeInput.value = '';
+                    phoneNumberInput.classList.remove('border-red-500'); emailForPrizeInput.classList.remove('border-red-500');
                 } else {
-                    contractNumberInput.value = '';
-                    contractDontRememberCheckbox.checked = false;
+                    contractNumberInput.value = ''; contractDontRememberCheckbox.checked = false;
                      contractNumberInput.classList.remove('border-red-500');
                 }
-                 // Clear general error message when choice is made
-                 if (errorTextElement.textContent.includes('нашим абонентом')) {
-                     hideError();
-                 }
+                 if (errorTextElement.textContent.includes('нашим абонентом') || errorTextElement.textContent.includes('телефон АБО email')) hideError();
+                 subscriberRadios.forEach(r => r.closest('label')?.classList.remove('border-red-500'));
             });
         });
 
@@ -937,7 +970,7 @@
                 const isChecked = this.checked;
 
                 // Generic "Other" text inputs
-                const otherInput = label?.querySelector('input[type="text"]:not([name="telegram_username"]):not([name="email_address"]), input[type="number"], textarea'); // Exclude specific conditional inputs handled elsewhere
+                const otherInput = label?.querySelector('input[type="text"]:not([name="telegram_username"]):not([name="email_address"]):not([name="email_for_prize"]):not([name="viber_phone_number"]), input[type="number"], textarea');
                 if (otherInput) {
                     otherInput.disabled = !isChecked;
                     otherInput.required = isChecked;
@@ -946,12 +979,12 @@
                 }
 
                 // Radio groups disabling other text inputs
-                 if (this.type === 'radio') {
+                 if (this.type === 'radio' && this.name !== 'is_subscriber') {
                      const radioGroupName = this.name;
                      form.querySelectorAll(`input[type="radio"][name="${radioGroupName}"]`).forEach(radioInGroup => {
                          if (radioInGroup !== this) {
                              const relatedLabel = radioInGroup.closest('label');
-                             const relatedOtherInput = relatedLabel?.querySelector('input[type="text"]:not([name="telegram_username"]):not([name="email_address"]), input[type="number"], textarea');
+                             const relatedOtherInput = relatedLabel?.querySelector('input[type="text"]:not([name="telegram_username"]):not([name="email_address"]):not([name="email_for_prize"]):not([name="viber_phone_number"]), input[type="number"], textarea');
                              if (relatedOtherInput) { relatedOtherInput.disabled = true; relatedOtherInput.required = false; relatedOtherInput.classList.remove('border-red-500'); }
                          }
                      });
@@ -959,18 +992,19 @@
 
                  // Specific logic for Step 8 (Additional Services) checkbox
                  if (this.id === 'interested-other-services-cb') {
-                     if (otherServicesDetailsContainer && otherServicesDetailsInput) {
-                         otherServicesDetailsContainer.classList.toggle('hidden', !isChecked);
-                         otherServicesDetailsInput.required = isChecked;
-                         if (!isChecked) { otherServicesDetailsInput.value = ''; otherServicesDetailsInput.classList.remove('border-red-500'); }
-                         else if (event && event.type === 'change' && otherServicesDetailsInput.offsetParent !== null) { otherServicesDetailsInput.focus(); }
-                     }
+                     toggleConditionalInput(this, otherServicesDetailsContainer, otherServicesDetailsInput, event);
                  }
                  // Specific logic for Step 9 (Communication Preferences) conditional inputs
-                 if (this.id === 'comm-email' || this.id === 'comm-telegram') {
-                     toggleCommInputVisibility(commEmailCheckbox, emailContainer, emailInput);
-                     toggleCommInputVisibility(commTelegramCheckbox, telegramContainer, telegramInput);
+                 if (this.id === 'comm-email') {
+                     toggleConditionalInput(this, emailContainer, emailInput, event);
                  }
+                 if (this.id === 'comm-telegram') {
+                    toggleConditionalInput(this, telegramContainer, telegramInput, event);
+                 }
+                 if (this.id === 'comm-viber') { // New logic for Viber
+                     toggleConditionalInput(this, viberPhoneContainer, viberPhoneNumberInput, event);
+                 }
+
                  // Uncheck opt-out if another comm pref is selected
                  if (isChecked && this.name === 'communication_prefs[]' && commNoneCheckbox) {
                      commNoneCheckbox.checked = false;
@@ -981,13 +1015,9 @@
                  }
 
             });
-             // Trigger initial state check without focusing
-             const initialChangeEvent = new Event('change', { bubbles: false });
-             input.dispatchEvent(initialChangeEvent);
         });
 
         // --- Specific Question Logic ---
-        // Limit Goals checkboxes
         const goalsCheckboxes = form.querySelectorAll('input[name="goals[]"]');
         goalsCheckboxes.forEach(cb => {
             cb.addEventListener('change', () => {
@@ -997,7 +1027,6 @@
                  if(checkedCount > 0) goalsCheckboxes.forEach(gcb => gcb.closest('label')?.classList.remove('border-red-500'));
             });
         });
-        // Clear Features validation (now in step 7)
         const featuresCheckboxes = form.querySelectorAll('input[name="features[]"]');
         featuresCheckboxes.forEach(cb => {
             cb.addEventListener('change', () => {
@@ -1009,20 +1038,41 @@
             });
         });
 
-        // --- Communication Preferences Logic (now step 9) ---
-        const toggleCommInputVisibility = (checkbox, container, inputElement) => {
+        // --- Communication Preferences Logic ---
+        const toggleConditionalInput = (checkbox, container, inputElement, event) => {
              if(!checkbox || !container || !inputElement) return;
-            if (checkbox.checked) {
-                container.classList.remove('hidden');
-                inputElement.required = (inputElement.id === 'email-address'); // Email input is required only if email comm is checked
-            } else {
-                container.classList.add('hidden');
-                inputElement.required = false;
-                inputElement.value = '';
-                inputElement.classList.remove('border-red-500');
-            }
+             const isChecked = checkbox.checked;
+             container.classList.toggle('hidden', !isChecked);
+             // Make email/viber phone required ONLY if their specific checkbox is checked
+             inputElement.required = isChecked && (inputElement.id === 'email-address' || inputElement.id === 'viber-phone-number');
+             if (!isChecked) {
+                 inputElement.value = '';
+                 inputElement.classList.remove('border-red-500');
+             } else if (event && event.type === 'change' && inputElement.offsetParent !== null) {
+                 // Focus only on user interaction, exclude programmatic changes
+                 inputElement.focus();
+             }
         };
-        // Initial setup calls moved inside the main event listener loop's initial dispatch
+
+         // Manually trigger initial state for specific conditional inputs after listeners are set
+         toggleConditionalInput(commEmailCheckbox, emailContainer, emailInput, null);
+         toggleConditionalInput(commTelegramCheckbox, telegramContainer, telegramInput, null);
+         toggleConditionalInput(commViberCheckbox, viberPhoneContainer, viberPhoneNumberInput, null); // Initial state for Viber
+         if (interestedOtherServicesCheckbox && otherServicesDetailsContainer && otherServicesDetailsInput) {
+              otherServicesDetailsContainer.classList.toggle('hidden', !interestedOtherServicesCheckbox.checked);
+              otherServicesDetailsInput.required = interestedOtherServicesCheckbox.checked;
+              if (!interestedOtherServicesCheckbox.checked) { otherServicesDetailsInput.value = ''; otherServicesDetailsInput.classList.remove('border-red-500'); }
+         }
+         // Trigger initial state for any 'Other' inputs associated with checked radios/checkboxes on load (if any)
+         form.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked').forEach(input => {
+             const label = input.closest('label');
+             const otherInput = label?.querySelector('input[type="text"]:not([name="telegram_username"]):not([name="email_address"]):not([name="email_for_prize"]):not([name="viber_phone_number"]), input[type="number"], textarea');
+             if(otherInput) {
+                 otherInput.disabled = false;
+                 otherInput.required = true;
+             }
+         });
+
 
         // --- Input Validation Highlighting Removal ---
         form.querySelectorAll('input, textarea').forEach(input => {
@@ -1043,35 +1093,104 @@
                     } else if (input.type === 'email') {
                         if (input.value.trim()) shouldRemoveError = true;
                     } else if (input.type === 'tel') {
-                         if (input.value.trim() && isValidPhone(input.value.trim())) shouldRemoveError = true; // Remove phone error only if format becomes valid
+                         if (input.value.trim() && isValidPhone(input.value.trim())) shouldRemoveError = true;
                     } else if (input.value.trim()) {
                         shouldRemoveError = true;
                     }
 
                     if (shouldRemoveError) wrapper.classList.remove('border-red-500');
 
-                    // If Step 1 and non-subscriber, check if *either* phone or email is now validly filled
                     if (currentStep === 1 && form.querySelector('input[name="is_subscriber"][value="no"]:checked')) {
                          const phoneValue = phoneNumberInput.value.trim();
                          const emailValue = emailForPrizeInput.value.trim();
                          if ((phoneValue && isValidPhone(phoneValue)) || (emailValue && isValidEmail(emailValue))) {
                              phoneNumberInput.classList.remove('border-red-500');
                              emailForPrizeInput.classList.remove('border-red-500');
-                             if (errorTextElement.textContent.includes('телефон АБО email')) {
-                                 hideError();
-                             }
+                             if (errorTextElement.textContent.includes('телефон АБО email')) hideError();
                          }
-                         // Also hide specific format errors if the field causing it becomes valid
                          if (input === phoneNumberInput && isValidPhone(phoneValue) && errorTextElement.textContent.includes('формат номеру телефону')) hideError();
                          if (input === emailForPrizeInput && isValidEmail(emailValue) && errorTextElement.textContent.includes('формат Email адреси')) hideError();
-
                     }
+                     // Clear Viber phone format error
+                     if (input === viberPhoneNumberInput && isValidPhone(input.value.trim()) && errorTextElement.textContent.includes('дійсний номер телефону')) hideError();
                 }
             });
              if(input.type === 'radio' || input.type === 'checkbox') {
                  input.addEventListener('change', () => { input.dispatchEvent(new Event('input', { bubbles: false })); });
              }
         });
+
+         // --- Speech Recognition Logic ---
+         if (isRecognitionSupported && speechButton && commentsTextarea && speechStatus) {
+            speechButton.addEventListener('click', () => {
+                try {
+                    // Check if recognition is already running before starting
+                    // Note: Standard SpeechRecognition doesn't have a reliable 'running' state property.
+                    // We manage state via button disabled/class.
+                    if (speechButton.disabled) {
+                        recognition.stop(); // Attempt to stop if button indicates it's running
+                        return;
+                    }
+                    recognition.start();
+                    speechStatus.textContent = 'Слухаю...';
+                    speechButton.disabled = true;
+                    speechButton.classList.add('listening');
+                } catch (error) {
+                    // Handle potential errors like "recognition already started"
+                    if (error.name === 'InvalidStateError') {
+                         // Ignore if already started, or try to stop/restart if needed
+                         console.warn("Speech recognition already started?");
+                    } else {
+                        console.error("Speech recognition start error:", error);
+                        speechStatus.textContent = 'Помилка запуску розпізнавання.';
+                        speechButton.disabled = false;
+                        speechButton.classList.remove('listening');
+                    }
+                }
+            });
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                // Concatenate final results
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                }
+                // Append transcript with a space if textarea not empty
+                if (transcript) {
+                    // Trim existing value and add space only if there's content
+                    const currentVal = commentsTextarea.value.trim();
+                    commentsTextarea.value = currentVal + (currentVal ? ' ' : '') + transcript.trim();
+                    // Trigger input event for potential framework bindings
+                    commentsTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                let errorMessage = 'Помилка розпізнавання.';
+                if (event.error === 'no-speech') {
+                    errorMessage = 'Нічого не розпізнано. Спробуйте ще.';
+                } else if (event.error === 'audio-capture') {
+                    errorMessage = 'Помилка мікрофону.';
+                } else if (event.error === 'not-allowed') {
+                    errorMessage = 'Доступ до мікрофону заборонено.';
+                }
+                speechStatus.textContent = errorMessage;
+                 // Ensure button is re-enabled on error
+                 speechButton.disabled = false;
+                 speechButton.classList.remove('listening');
+            };
+
+            recognition.onend = () => {
+                // Clear status and reset button only when recognition truly ends
+                speechStatus.textContent = '';
+                speechButton.disabled = false;
+                speechButton.classList.remove('listening');
+            };
+         }
+
 
         // --- Initialize ---
         updateProgress();
