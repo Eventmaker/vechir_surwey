@@ -30,6 +30,7 @@
                         'gloss-mid': 'rgba(0, 0, 0, 0.92)',     // black with opacity
                         'gloss-end': 'rgba(31, 41, 55, 0.95)',   // gray-900 with opacity
                         'gloss-border': 'rgba(75, 85, 99, 0.5)', // gray-700 with opacity
+                        'dot-inactive': '#4b5563', // gray-600 for inactive dots (still defined, but not used directly in style below)
                     },
                     fontFamily: {
                         // Use 'Inter' as the primary font, fallback to system sans-serif
@@ -40,27 +41,19 @@
         }
     </script>
     <style>
-        /* Custom styles for elements not easily handled by Tailwind alone */
+        /* Custom styles */
         body {
             background-image: linear-gradient(rgba(18, 20, 29, 0.85), rgba(18, 20, 29, 0.85)), url('https://vstore.net.ua/image/catalog/back.webp');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-color: theme('colors.bg-dark');
-            color: theme('colors.text-light');
-            font-family: theme('fontFamily.sans');
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            background-color: theme('colors.bg-dark'); color: theme('colors.text-light'); font-family: theme('fontFamily.sans');
+            min-height: 100vh; display: flex; flex-direction: column;
         }
-
         main { flex-grow: 1; }
-        .progress-bar { background: linear-gradient(90deg, theme('colors.accent-blue'), theme('colors.accent-pink')); transition: width 0.3s ease-in-out; }
         input[type="radio"], input[type="checkbox"] { accent-color: theme('colors.accent-pink'); transform: scale(1.2); cursor: pointer; margin-right: 0.75rem; flex-shrink: 0; }
 
-        input[type="text"]:not(:disabled), input[type="number"]:not(:disabled), input[type="tel"]:not(:disabled), input[type="email"]:not(:disabled), textarea:not(:disabled), .inline-input:not(:disabled), .form-input-conditional:not(:disabled) { color: theme('colors.accent-blue'); }
-        ::placeholder { color: theme('colors.text-secondary / 60%'); opacity: 1; }
-        input:disabled, textarea:disabled, .inline-input:disabled, .form-input-conditional:disabled { color: theme('colors.text-secondary'); opacity: 0.6; cursor: not-allowed; }
+        input[type="text"]:not(:disabled), input[type="number"]:not(:disabled), input[type="tel"]:not(:disabled), input[type="email"]:not(:disabled), textarea:not(:disabled), .inline-input:not(:disabled), .form-input-conditional:not(:disabled) { color: #00aaff; /* Direct hex */ }
+        ::placeholder { color: #cccccc99; opacity: 1; }
+        input:disabled, textarea:disabled, .inline-input:disabled, .form-input-conditional:disabled { color: #cccccc; opacity: 0.6; cursor: not-allowed; }
 
         input[type="text"]:focus, input[type="number"]:focus, input[type="tel"]:focus, input[type="email"]:focus, textarea:focus { outline: none; border-color: theme('colors.accent-blue'); box-shadow: 0 0 5px theme('colors.accent-blue'); }
 
@@ -90,35 +83,24 @@
         .border-red-500 { border-color: #ef4444 !important; }
         label.border-red-500 { border-color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
 
-        /* Styles for conditionally shown fields */
-        .conditional-fields { display: none; } /* Hidden by default */
-        .conditional-fields.visible { display: block; animation: fadeIn 0.5s; } /* Shown with animation */
+        .conditional-fields { display: none; }
+        .conditional-fields.visible { display: block; animation: fadeIn 0.5s; }
 
-        /* Style for speech input button */
-        #start-speech-btn {
-            background-color: theme('colors.input-bg');
-            border: 1px solid theme('colors.border-color');
-            color: theme('colors.text-secondary');
-            padding: 0.5rem;
-            margin-left: 0.5rem;
-            border-radius: 0.375rem; /* rounded-md */
-            cursor: pointer;
-            transition: all 0.2s ease;
+        #start-speech-btn { background-color: theme('colors.input-bg'); border: 1px solid theme('colors.border-color'); color: theme('colors.text-secondary'); padding: 0.5rem; margin-left: 0.5rem; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s ease; }
+        #start-speech-btn:hover { background-color: theme('colors.input-bg-hover'); color: theme('colors.accent-blue'); }
+        #start-speech-btn.listening { background-color: theme('colors.accent-pink'); color: theme('colors.text-light'); border-color: theme('colors.accent-pink'); }
+        #speech-status { font-size: 0.75rem; color: theme('colors.text-secondary'); margin-top: 0.25rem; height: 1em; }
+
+        /* Styles for Progress Dots - Updated Colors */
+        .progress-dot {
+            width: 0.75rem; /* w-3 */
+            height: 0.75rem; /* h-3 */
+            border-radius: 9999px; /* rounded-full */
+            background-color: #4b5563; /* Direct hex for dot-inactive (gray-600) */
+            transition: background-color 0.3s ease-in-out;
         }
-        #start-speech-btn:hover {
-            background-color: theme('colors.input-bg-hover');
-            color: theme('colors.accent-blue');
-        }
-        #start-speech-btn.listening {
-            background-color: theme('colors.accent-pink');
-            color: theme('colors.text-light');
-            border-color: theme('colors.accent-pink');
-        }
-        #speech-status {
-            font-size: 0.75rem; /* text-xs */
-            color: theme('colors.text-secondary');
-            margin-top: 0.25rem; /* mt-1 */
-            height: 1em; /* Reserve space */
+        .progress-dot.active-dot {
+            background-color: #00aaff; /* Direct hex for accent-blue */
         }
 
     </style>
@@ -146,7 +128,6 @@
             </h2>
             <p class="mb-3 text-text-secondary">Шановний абоненте,</p>
             <p class="mb-5 text-text-secondary">Дякуємо за Ваш інтерес до нової послуги "Відеонагляд" від "Вечір Телеком"! Ми прагнемо створити сервіс, який буде максимально відповідати Вашим потребам. Просимо Вас приділити кілька хвилин, щоб поділитися своєю думкою та допомогти нам зробити "Відеонагляд" зручним та простим.</p>
-
             <div class="flex flex-col md:flex-row items-center gap-8 my-8">
                  <div class="w-full md:w-1/3 flex justify-center items-center bg-black/20 rounded-lg p-2 shadow-inner">
                       <img src="https://vstore.net.ua/image/catalog/lmou1.webp"
@@ -162,7 +143,6 @@
                       <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
                  </div>
             </div>
-
             <div class="text-center mt-8">
                  <button class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2.5 px-8 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg" id="start-survey-btn">Розпочати опитування</button>
             </div>
@@ -171,324 +151,154 @@
         <section id="survey-form" class="hidden">
             <form id="video-survey" novalidate>
                  <div class="progress-indicator mb-8">
-                     <div class="progress-bar-container w-full bg-input-bg rounded-full h-2.5 overflow-hidden shadow-inner">
-                         <div class="progress-bar h-full rounded-full" id="progress-bar" style="width: 0%;"></div>
-                     </div>
+                     <div id="progress-dots-container" class="flex justify-center items-center space-x-2 py-2">
+                         </div>
                      <div class="progress-text text-center mt-2 text-sm text-text-secondary" id="progress-text">Крок 1 з 10</div>
                  </div>
-
                  <div id="error-message-container" role="alert">
                      <p id="error-message-text"></p>
                  </div>
 
                  <div class="survey-step active" data-step="1">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-user-check"></i> Питання 1: Статус абонента та контакти</h3>
-
                      <div class="form-group mb-5">
                          <label class="block mb-3 font-medium text-text-secondary">Ви є абонентом "Вечір Телеком"?<span class="text-accent-pink ml-1">*</span></label>
                          <div class="space-y-3">
-                             <label class="radio-label">
-                                 <input type="radio" name="is_subscriber" value="yes" required>
-                                 <i class="fa-solid fa-check text-green-500"></i> Так
-                             </label>
-                             <label class="radio-label">
-                                 <input type="radio" name="is_subscriber" value="no" required>
-                                 <i class="fa-solid fa-times text-red-500"></i> Ні
-                             </label>
+                             <label class="radio-label"><input type="radio" name="is_subscriber" value="yes" required><i class="fa-solid fa-check text-green-500"></i> Так</label>
+                             <label class="radio-label"><input type="radio" name="is_subscriber" value="no" required><i class="fa-solid fa-times text-red-500"></i> Ні</label>
                          </div>
                      </div>
-
                      <div id="subscriber-fields" class="conditional-fields mt-6 pt-4 border-t border-border-color/50">
                          <div class="form-group mb-5">
-                             <label for="contract-number" class="block mb-2 font-medium text-text-secondary flex items-center">
-                                <i class="fa-solid fa-file-contract"></i> Ваш номер договору (ППК)
-                             </label>
+                             <label for="contract-number" class="block mb-2 font-medium text-text-secondary flex items-center"><i class="fa-solid fa-file-contract"></i> Ваш номер договору (ППК)</label>
                              <input type="text" id="contract-number" name="contract_number" placeholder="Введіть ваш Персональний платіжний код" class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
-                             <div class="mt-2">
-                                 <label class="checkbox-label inline-flex !p-2 !bg-transparent">
-                                     <input type="checkbox" id="contract-dont-remember" name="contract_dont_remember" value="yes">
-                                     <span class="text-sm text-text-secondary">Не пам'ятаю номер договору</span>
-                                 </label>
-                             </div>
+                             <div class="mt-2"><label class="checkbox-label inline-flex !p-2 !bg-transparent"><input type="checkbox" id="contract-dont-remember" name="contract_dont_remember" value="yes"><span class="text-sm text-text-secondary">Не пам'ятаю номер договору</span></label></div>
                              <p class="input-hint text-xs text-text-secondary mt-1">Якщо пам'ятаєте, вкажіть для ідентифікації.</p>
                          </div>
                      </div>
-
                      <div id="non-subscriber-fields" class="conditional-fields mt-6 pt-4 border-t border-border-color/50">
                           <p class="input-hint text-sm text-text-secondary mb-4">Будь ласка, вкажіть контактні дані, щоб ми могли повідомити Вас про **перемогу** у розіграші камери:</p>
                          <div class="form-group mb-5">
-                             <label for="phone-number" class="block mb-2 font-medium text-text-secondary flex items-center">
-                                 <i class="fa-solid fa-phone"></i> Ваш контактний номер телефону
-                             </label>
+                             <label for="phone-number" class="block mb-2 font-medium text-text-secondary flex items-center"><i class="fa-solid fa-phone"></i> Ваш контактний номер телефону</label>
                              <input type="tel" id="phone-number" name="phone_number" placeholder="+380 XX XXX XX XX" class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
                              <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі **перемоги**.</p>
                          </div>
                          <div class="text-center my-2 text-text-secondary font-medium">АБО</div>
                          <div class="form-group mb-5">
-                            <label for="email-for-prize" class="block mb-2 font-medium text-text-secondary flex items-center">
-                                <i class="fa-solid fa-at"></i> Ваш Email
-                            </label>
+                            <label for="email-for-prize" class="block mb-2 font-medium text-text-secondary flex items-center"><i class="fa-solid fa-at"></i> Ваш Email</label>
                             <input type="email" id="email-for-prize" name="email_for_prize" placeholder="example@email.com" class="w-full p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
                              <p class="input-hint text-xs text-text-secondary mt-1">Потрібен для зв'язку у разі **перемоги**.</p>
                         </div>
                         <p class="input-hint text-sm text-red-400 mb-4">** Необхідно вказати принаймні один контакт: телефон АБО email.</p>
                      </div>
-
-                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0" disabled>Назад</button>
-                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0" disabled>Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="2">
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-house-chimney-window"></i> Питання 2: Який тип приміщення? <span class="text-accent-pink ml-1">*</span></h3>
                       <div class="form-group space-y-3 mb-5">
-                           <label class="radio-label">
-                               <input type="radio" name="premise_type" value="Квартира" required>
-                               <i class="fa-solid fa-building text-accent-blue"></i> Квартира
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="premise_type" value="Приватний будинок">
-                               <i class="fa-solid fa-house text-accent-blue"></i> Приватний будинок
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="premise_type" value="Офіс">
-                               <i class="fa-solid fa-briefcase text-accent-blue"></i> Офіс
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="premise_type" value="Магазин">
-                               <i class="fa-solid fa-store text-accent-blue"></i> Магазин
-                           </label>
-                           <label class="radio-label flex-wrap">
-                               <input type="radio" name="premise_type" value="Інше">
-                               <i class="fa-solid fa-question text-accent-blue"></i> Інше
-                               <input type="text" name="premise_type_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть тип" disabled>
-                           </label>
+                           <label class="radio-label"><input type="radio" name="premise_type" value="Квартира" required><i class="fa-solid fa-building text-accent-blue"></i> Квартира</label>
+                           <label class="radio-label"><input type="radio" name="premise_type" value="Приватний будинок"><i class="fa-solid fa-house text-accent-blue"></i> Приватний будинок</label>
+                           <label class="radio-label"><input type="radio" name="premise_type" value="Офіс"><i class="fa-solid fa-briefcase text-accent-blue"></i> Офіс</label>
+                           <label class="radio-label"><input type="radio" name="premise_type" value="Магазин"><i class="fa-solid fa-store text-accent-blue"></i> Магазин</label>
+                           <label class="radio-label flex-wrap"><input type="radio" name="premise_type" value="Інше"><i class="fa-solid fa-question text-accent-blue"></i> Інше<input type="text" name="premise_type_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть тип" disabled></label>
                       </div>
-                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                      </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="3">
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-video-camera"></i> Питання 3: Чи користуєтесь Ви зараз системою відеоспостереження? <span class="text-accent-pink ml-1">*</span></h3>
                       <div class="form-group space-y-3 mb-5">
-                           <label class="radio-label">
-                               <input type="radio" name="using_now" value="Так" required data-next-step="5"> <i class="fa-solid fa-check text-green-500"></i> Так
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="using_now" value="Ні" required data-next-step="4"> <i class="fa-solid fa-times text-red-500"></i> Ні
-                           </label>
+                           <label class="radio-label"><input type="radio" name="using_now" value="Так" required data-next-step="5"><i class="fa-solid fa-check text-green-500"></i> Так</label>
+                           <label class="radio-label"><input type="radio" name="using_now" value="Ні" required data-next-step="4"><i class="fa-solid fa-times text-red-500"></i> Ні</label>
                       </div>
-                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                      </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="4">
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> Питання 4: Оберіть основну причину, чому не користуєтесь <span class="text-accent-pink ml-1">*</span></h3>
                       <div class="form-group space-y-3 mb-5">
-                           <label class="radio-label">
-                                <input type="radio" name="reason_not_using" value="Висока вартість" required>
-                                <i class="fa-solid fa-dollar-sign text-accent-blue"></i> Висока вартість
-                           </label>
-                           <label class="radio-label">
-                                <input type="radio" name="reason_not_using" value="Складність встановлення">
-                                <i class="fa-solid fa-screwdriver-wrench text-accent-blue"></i> Складність встановлення та налаштування
-                           </label>
-                           <label class="radio-label">
-                                <input type="radio" name="reason_not_using" value="Необхідність обслуговування">
-                                <i class="fa-solid fa-user-gear text-accent-blue"></i> Необхідність обслуговування
-                           </label>
-                           <label class="radio-label">
-                                <input type="radio" name="reason_not_using" value="Недостатня обізнаність">
-                                <i class="fa-solid fa-info-circle text-accent-blue"></i> Недостатня обізнаність про переваги
-                           </label>
-                           <label class="radio-label flex-wrap">
-                                <input type="radio" name="reason_not_using" value="Інше">
-                                <i class="fa-solid fa-question text-accent-blue"></i> Інше
-                                <input type="text" name="reason_not_using_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть причину" disabled>
-                           </label>
+                           <label class="radio-label"><input type="radio" name="reason_not_using" value="Висока вартість" required><i class="fa-solid fa-dollar-sign text-accent-blue"></i> Висока вартість</label>
+                           <label class="radio-label"><input type="radio" name="reason_not_using" value="Складність встановлення"><i class="fa-solid fa-screwdriver-wrench text-accent-blue"></i> Складність встановлення та налаштування</label>
+                           <label class="radio-label"><input type="radio" name="reason_not_using" value="Необхідність обслуговування"><i class="fa-solid fa-user-gear text-accent-blue"></i> Необхідність обслуговування</label>
+                           <label class="radio-label"><input type="radio" name="reason_not_using" value="Недостатня обізнаність"><i class="fa-solid fa-info-circle text-accent-blue"></i> Недостатня обізнаність про переваги</label>
+                           <label class="radio-label flex-wrap"><input type="radio" name="reason_not_using" value="Інше"><i class="fa-solid fa-question text-accent-blue"></i> Інше<input type="text" name="reason_not_using_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть причину" disabled></label>
                       </div>
-                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                      </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="5">
-                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-bullseye"></i> Які Ваші основні цілі використання послуги відеоспостереження
-                      </h3>
+                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Які Ваші основні цілі використання послуги відеоспостереження</h3>
                       <p class="input-hint text-sm text-text-secondary mb-4">Оберіть 1-2 найважливіші пункти. <span class="text-accent-pink ml-1">*</span></p>
                       <div class="form-group space-y-3 mb-5">
-                           <label class="checkbox-label">
-                               <input type="checkbox" name="goals[]" value="Безпека">
-                               <i class="fa-solid fa-shield-halved text-accent-blue"></i> Забезпечення безпеки та захист від крадіжок
-                           </label>
-                           <label class="checkbox-label">
-                               <input type="checkbox" name="goals[]" value="Контроль">
-                               <i class="fa-solid fa-users-viewfinder text-accent-blue"></i> Контроль за дітьми/персоналом/територією
-                           </label>
-                           <label class="checkbox-label">
-                               <input type="checkbox" name="goals[]" value="Докази">
-                               <i class="fa-solid fa-file-video text-accent-blue"></i> Отримання доказів у разі інцидентів
-                           </label>
-                           <label class="checkbox-label">
-                               <input type="checkbox" name="goals[]" value="Спокій">
-                               <i class="fa-solid fa-face-smile-beam text-accent-blue"></i> Спокій та впевненість
-                           </label>
-                           <label class="checkbox-label flex-wrap">
-                               <input type="checkbox" name="goals[]" value="Інше">
-                               <i class="fa-solid fa-question text-accent-blue"></i> Інше
-                               <input type="text" name="goals_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть ціль" disabled>
-                           </label>
+                           <label class="checkbox-label"><input type="checkbox" name="goals[]" value="Безпека"><i class="fa-solid fa-shield-halved text-accent-blue"></i> Забезпечення безпеки та захист від крадіжок</label>
+                           <label class="checkbox-label"><input type="checkbox" name="goals[]" value="Контроль"><i class="fa-solid fa-users-viewfinder text-accent-blue"></i> Контроль за дітьми/персоналом/територією</label>
+                           <label class="checkbox-label"><input type="checkbox" name="goals[]" value="Докази"><i class="fa-solid fa-file-video text-accent-blue"></i> Отримання доказів у разі інцидентів</label>
+                           <label class="checkbox-label"><input type="checkbox" name="goals[]" value="Спокій"><i class="fa-solid fa-face-smile-beam text-accent-blue"></i> Спокій та впевненість</label>
+                           <label class="checkbox-label flex-wrap"><input type="checkbox" name="goals[]" value="Інше"><i class="fa-solid fa-question text-accent-blue"></i> Інше<input type="text" name="goals_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть ціль" disabled></label>
                       </div>
-                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                      </div>
+                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="6">
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Питання 6: Модель оплати та бюджет <span class="text-accent-pink ml-1">*</span></h3>
                       <p class="input-hint text-sm text-text-secondary mb-4">Який підхід до оплати та щомісячний бюджет на сервісну частину (технічне обслуговування, заміна обладнання) для Вас оптимальний?<span class="text-accent-pink ml-1">*</span></p>
                       <div class="form-group space-y-3 mb-5">
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="purchase" required>
-                               <i class="fa-solid fa-credit-card text-accent-blue"></i> Одноразова купівля обладнання(з оплатою за технічне обслуговування по факту)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="rent_under_300">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата до 300 грн (оренда обладнання + сервіс)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="rent_300_500">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 300-500 грн (оренда обладнання + сервіс)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="rent_500_800">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 500-800 грн (оренда обладнання + сервіс)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="rent_over_800">
-                               <i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата > 800 грн (оренда обладнання + сервіс)
-                           </label>
-                           <label class="radio-label">
-                               <input type="radio" name="payment_model_budget" value="undecided">
-                               <i class="fa-solid fa-circle-question text-accent-blue"></i> Важко сказати / Залежить від умов
-                           </label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="purchase" required><i class="fa-solid fa-credit-card text-accent-blue"></i> Одноразова купівля обладнання(з оплатою за технічне обслуговування по факту)</label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="rent_under_300"><i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата до 300 грн (оренда обладнання + сервіс)</label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="rent_300_500"><i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 300-500 грн (оренда обладнання + сервіс)</label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="rent_500_800"><i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата 500-800 грн (оренда обладнання + сервіс)</label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="rent_over_800"><i class="fa-solid fa-calendar-days text-accent-blue"></i> Щомісячна абонплата > 800 грн (оренда обладнання + сервіс)</label>
+                           <label class="radio-label"><input type="radio" name="payment_model_budget" value="undecided"><i class="fa-solid fa-circle-question text-accent-blue"></i> Важко сказати / Залежить від умов</label>
                       </div>
-                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                      </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="7">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-sliders"></i> Питання 7: Бажані налаштування системи</h3>
-
                      <div class="mb-6">
                          <label class="block mb-3 font-medium text-text-secondary"><i class="fa-solid fa-camera-retro mr-2"></i>Необхідна кількість камер <span class="text-accent-pink ml-1">*</span></label>
                          <div class="form-group space-y-3">
-                              <label class="radio-label">
-                                  <input type="radio" name="camera_count" value="1" required> 1
-                              </label>
-                              <label class="radio-label">
-                                  <input type="radio" name="camera_count" value="2-3"> 2-3
-                              </label>
-                              <label class="radio-label">
-                                  <input type="radio" name="camera_count" value="4-5"> 4-5
-                              </label>
-                              <label class="radio-label">
-                                  <input type="radio" name="camera_count" value=">5"> Більше 5
-                              </label>
+                              <label class="radio-label"><input type="radio" name="camera_count" value="1" required> 1</label>
+                              <label class="radio-label"><input type="radio" name="camera_count" value="2-3"> 2-3</label>
+                              <label class="radio-label"><input type="radio" name="camera_count" value="4-5"> 4-5</label>
+                              <label class="radio-label"><input type="radio" name="camera_count" value=">5"> Більше 5</label>
                          </div>
                      </div>
-
                      <div class="pt-4 border-t border-border-color/50">
                          <label class="block mb-3 font-medium text-text-secondary"><i class="fa-solid fa-list-check mr-2"></i>Бажані функції <span class="text-accent-pink ml-1">*</span></label>
                          <div class="form-group space-y-3 mb-5">
-                              <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Нічна зйомка"> <i class="fa-solid fa-moon text-accent-blue"></i> Нічна зйомка
-                              </label>
-                              <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Віддалений доступ"> <i class="fa-solid fa-mobile-screen-button text-accent-blue"></i> Віддалений доступ (телефон/комп'ютер)
-                              </label>
-                              <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Висока якість запису"> <i class="fa-solid fa-film text-accent-blue"></i> Висока якість запису (HD/FullHD+)
-                              </label>
-                              <label class="checkbox-label">
-                                  <input type="checkbox" name="features[]" value="Датчики руху"> <i class="fa-solid fa-person-running text-accent-blue"></i> Датчики руху
-                              </label>
-                              <label class="checkbox-label flex-wrap">
-                                  <input type="checkbox" name="features[]" value="Зберігання записів"> <i class="fa-solid fa-cloud-arrow-up text-accent-blue"></i> Зберігання записів
-                                  <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(бажаний період:</span>
-                                  <input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 w-16 text-center mt-2 sm:mt-0" disabled>
-                                  <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary"> днів)</span>
-                              </label>
-                              <label class="checkbox-label flex-wrap">
-                                  <input type="checkbox" name="features[]" value="Отримання сповіщень"> <i class="fa-solid fa-bell text-accent-blue"></i> Отримання сповіщень
-                                   <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(зручний спосіб:</span>
-                                   <input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 mt-2 sm:mt-0 sm:ml-1" disabled>
-                                   <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary">)</span>
-                              </label>
+                              <label class="checkbox-label"><input type="checkbox" name="features[]" value="Нічна зйомка"> <i class="fa-solid fa-moon text-accent-blue"></i> Нічна зйомка</label>
+                              <label class="checkbox-label"><input type="checkbox" name="features[]" value="Віддалений доступ"> <i class="fa-solid fa-mobile-screen-button text-accent-blue"></i> Віддалений доступ (телефон/комп'ютер)</label>
+                              <label class="checkbox-label"><input type="checkbox" name="features[]" value="Висока якість запису"> <i class="fa-solid fa-film text-accent-blue"></i> Висока якість запису (HD/FullHD+)</label>
+                              <label class="checkbox-label"><input type="checkbox" name="features[]" value="Датчики руху"> <i class="fa-solid fa-person-running text-accent-blue"></i> Датчики руху</label>
+                              <label class="checkbox-label flex-wrap"><input type="checkbox" name="features[]" value="Зберігання записів"> <i class="fa-solid fa-cloud-arrow-up text-accent-blue"></i> Зберігання записів<span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(бажаний період:</span><input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 w-16 text-center mt-2 sm:mt-0" disabled><span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary"> днів)</span></label>
+                              <label class="checkbox-label flex-wrap"><input type="checkbox" name="features[]" value="Отримання сповіщень"> <i class="fa-solid fa-bell text-accent-blue"></i> Отримання сповіщень<span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(зручний спосіб:</span><input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 mt-2 sm:mt-0 sm:ml-1" disabled><span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary">)</span></label>
                          </div>
                            <p class="input-hint text-xs text-text-secondary -mt-3 mb-4">Оберіть хоча б одну функцію.</p> </div>
-
-                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                          <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                          <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="8">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-puzzle-piece"></i> Питання 8: Додаткові послуги та підтримка</h3>
                      <div class="form-group space-y-4 mb-5">
+                         <div><label class="checkbox-label"><input type="checkbox" name="needs_consultation" value="yes"><i class="fa-solid fa-headset text-accent-blue"></i> Бажаю отримати консультацію щодо підбору та налаштування</label></div>
                          <div>
-                             <label class="checkbox-label">
-                                 <input type="checkbox" name="needs_consultation" value="yes">
-                                 <i class="fa-solid fa-headset text-accent-blue"></i> Бажаю отримати консультацію щодо підбору та налаштування
-                             </label>
-                         </div>
-                         <div>
-                             <label class="checkbox-label">
-                                 <input type="checkbox" id="interested-other-services-cb" name="interested_other_services" value="yes">
-                                 <i class="fa-solid fa-shield-dog text-accent-blue"></i> Цікавлять інші послуги безпеки (напр., датчики, сигналізація)
-                             </label>
+                             <label class="checkbox-label"><input type="checkbox" id="interested-other-services-cb" name="interested_other_services" value="yes"><i class="fa-solid fa-shield-dog text-accent-blue"></i> Цікавлять інші послуги безпеки (напр., датчики, сигналізація)</label>
                              <div id="other-services-details-container" class="conditional-input-container hidden">
                                   <label for="other_services_details" class="block mb-1 text-sm font-medium text-text-secondary">Будь ласка, вкажіть, які саме послуги Вас цікавлять:</label>
                                   <input type="text" id="other_services_details" name="other_services_details" placeholder="Наприклад: датчики руху, диму..." class="form-input-conditional">
                              </div>
                          </div>
                      </div>
-                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="9">
                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-envelope-open-text"></i> Питання 9: Бажані способи зв'язку</h3>
                      <p class="input-hint text-sm text-text-secondary mb-4">Оберіть зручні канали для отримання важливих повідомлень від нас (стан послуг, акції, новини):</p>
                      <div class="form-group space-y-1 mb-5">
                           <div>
-                              <label class="checkbox-label">
-                                   <input type="checkbox" id="comm-viber" name="communication_prefs[]" value="viber">
-                                   <i class="fab fa-viber text-purple-500"></i> Viber
-                              </label>
+                              <label class="checkbox-label"><input type="checkbox" id="comm-viber" name="communication_prefs[]" value="viber"><i class="fab fa-viber text-purple-500"></i> Viber</label>
                               <div id="viber-phone-container" class="conditional-input-container hidden">
                                   <label for="viber-phone-number" class="block mb-1 text-sm font-medium text-text-secondary">Номер телефону для Viber:<span class="text-accent-pink ml-1">*</span></label>
                                   <input type="tel" id="viber-phone-number" name="viber_phone_number" class="form-input-conditional" placeholder="+380 XX XXX XX XX">
                               </div>
                               </div>
                           <div>
-                              <label class="checkbox-label">
-                                   <input type="checkbox" id="comm-telegram" name="communication_prefs[]" value="telegram">
-                                   <i class="fab fa-telegram text-sky-500"></i> Telegram Бот
-                              </label>
+                              <label class="checkbox-label"><input type="checkbox" id="comm-telegram" name="communication_prefs[]" value="telegram"><i class="fab fa-telegram text-sky-500"></i> Telegram Бот</label>
                                <span class="comm-pref-note">Ми надішлемо запрошення до нашого інформаційного боту.</span>
                                <div id="telegram-username-container" class="conditional-input-container hidden">
                                    <label for="telegram-username" class="block mb-1 text-sm font-medium text-text-secondary">Ваш Telegram username (необов'язково):</label>
@@ -496,52 +306,31 @@
                                </div>
                           </div>
                           <div>
-                              <label class="checkbox-label">
-                                   <input type="checkbox" id="comm-email" name="communication_prefs[]" value="email">
-                                   <i class="fa-solid fa-at text-red-500"></i> Email
-                              </label>
+                              <label class="checkbox-label"><input type="checkbox" id="comm-email" name="communication_prefs[]" value="email"><i class="fa-solid fa-at text-red-500"></i> Email</label>
                               <div id="email-input-container" class="conditional-input-container hidden">
                                    <label for="email-address" class="block mb-1 text-sm font-medium text-text-secondary">Ваша Email адреса:<span class="text-accent-pink ml-1">*</span></label>
                                    <input type="email" id="email-address" name="email_address" class="form-input-conditional" placeholder="example@email.com">
                               </div>
                           </div>
                           <div>
-                              <label class="checkbox-label">
-                                   <input type="checkbox" id="comm-sms" name="communication_prefs[]" value="sms">
-                                   <i class="fa-solid fa-comment-sms text-green-500"></i> SMS
-                              </label>
+                              <label class="checkbox-label"><input type="checkbox" id="comm-sms" name="communication_prefs[]" value="sms"><i class="fa-solid fa-comment-sms text-green-500"></i> SMS</label>
                               <span class="comm-pref-note">На номер телефону, вказаний раніше (якщо Ви не абонент і вказали його на кроці 1).</span>
                           </div>
-                           <div class="pt-3">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="comm-none" name="communication_prefs_optout" value="none">
-                                    <i class="fa-solid fa-comment-slash text-gray-500"></i> Не бажаю отримувати додаткові інформаційні повідомлення
-                                </label>
-                           </div>
+                           <div class="pt-3"><label class="checkbox-label"><input type="checkbox" id="comm-none" name="communication_prefs_optout" value="none"><i class="fa-solid fa-comment-slash text-gray-500"></i> Не бажаю отримувати додаткові інформаційні повідомлення</label></div>
                      </div>
-                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                          <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                          <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
-                     </div>
+                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button></div>
                  </div>
-
                  <div class="survey-step" data-step="10">
                       <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Питання 10: Ваші побажання та коментарі</h3>
                       <div class="form-group mb-5">
                            <label for="comments" class="block mb-2 font-medium text-text-secondary">Розкажіть, що ще важливо для Вас у послузі відеоспостереження?</label>
                            <div class="flex items-start">
                                <textarea id="comments" name="comments" rows="4" placeholder="Напишіть Ваші думки тут або використайте мікрофон..." class="flex-grow p-2.5 bg-input-bg border border-border-color rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition resize-vertical"></textarea>
-                               <button type="button" id="start-speech-btn" title="Голосовий ввід" class="flex-shrink-0">
-                                   <i class="fa-solid fa-microphone"></i>
-                               </button>
+                               <button type="button" id="start-speech-btn" title="Голосовий ввід" class="flex-shrink-0"><i class="fa-solid fa-microphone"></i></button>
                            </div>
                            <div id="speech-status" class="text-xs text-text-secondary mt-1 h-4"></div> </div>
-                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
-                           <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
-                           <button type="button" class="btn btn-submit bg-accent-pink hover:bg-pink-700 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Відправити</button>
-                      </div>
+                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color"><button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button><button type="button" class="btn btn-submit bg-accent-pink hover:bg-pink-700 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Відправити</button></div>
                  </div>
-
             </form>
         </section>
 
@@ -551,14 +340,9 @@
              <p class="mb-3 text-lg text-text-secondary">Ваша думка дуже важлива для нас і допоможе зробити послугу "Відеонагляд" ще кращою.</p>
              <p class="text-lg text-text-secondary">Бажаємо успіху в розіграші камери Imou Bullet 2E!</p>
              <div class="mt-8">
-                 <a href="https://eventmaker.github.io/vechir_video/"
-                    target="_blank" rel="noopener noreferrer"
-                    class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg">
-                     Переглянути тарифи
-                 </a>
+                 <a href="https://eventmaker.github.io/vechir_video/" target="_blank" rel="noopener noreferrer" class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg">Переглянути тарифи</a>
              </div>
         </section>
-
     </main>
 
     <footer class="text-center mt-auto py-4 text-sm text-text-secondary border-t border-border-color bg-bg-dark/80">
@@ -575,7 +359,7 @@
         const startBtn = document.getElementById('start-survey-btn');
         const form = document.getElementById('video-survey');
         const steps = form.querySelectorAll('.survey-step');
-        const progressBar = document.getElementById('progress-bar');
+        const progressBarContainer = document.getElementById('progress-dots-container'); // Updated ID
         const progressText = document.getElementById('progress-text');
         const errorContainer = document.getElementById('error-message-container');
         const errorTextElement = document.getElementById('error-message-text');
@@ -630,10 +414,37 @@
         }
 
         // --- Helper Functions ---
+
+        /** Creates the progress dots */
+        function createProgressDots() {
+            if (!progressBarContainer) return;
+            progressBarContainer.innerHTML = ''; // Clear existing dots if any
+            for (let i = 1; i <= totalSteps; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('progress-dot');
+                dot.dataset.stepDot = i; // Store step number (1-based)
+                progressBarContainer.appendChild(dot);
+            }
+        }
+
+        /** Updates the progress dots and text indicator. */
         function updateProgress() {
-            const progressPercentage = totalSteps > 1 ? ((currentStep -1) / (totalSteps -1)) * 100 : (currentStep >= totalSteps ? 100 : 0);
-            progressBar.style.width = `${progressPercentage}%`;
-            progressText.textContent = `Крок ${currentStep} з ${totalSteps}`;
+            // Update Dots
+            const dots = progressBarContainer?.querySelectorAll('.progress-dot'); // Added optional chaining
+            if (dots) {
+                dots.forEach((dot, index) => {
+                    const dotStep = index + 1; // 1-based index
+                    if (dotStep <= currentStep) {
+                        dot.classList.add('active-dot');
+                    } else {
+                        dot.classList.remove('active-dot');
+                    }
+                });
+            }
+            // Update Text
+            if (progressText) {
+                progressText.textContent = `Крок ${currentStep} з ${totalSteps}`;
+            }
         }
 
         function showStep(stepNumber) {
@@ -644,7 +455,7 @@
                 currentStep = stepNumber;
                 const backBtn = stepToShow.querySelector('.btn-back');
                 if (backBtn) backBtn.disabled = history.length <= 1;
-                updateProgress();
+                updateProgress(); // Update dots and text
                 hideError();
                 const headerHeight = document.querySelector('header')?.offsetHeight || 60;
                 const elementTop = surveyFormSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
@@ -782,11 +593,9 @@
                     } else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea' || input.type === 'email' || input.type === 'tel') && input.hasAttribute('required') && !input.value.trim()) {
                         inputValid = false;
                     } else if (input.type === 'email' && input.hasAttribute('required') && input.value.trim() && !isValidEmail(input.value.trim())) {
-                        // Validation for required email fields (like comms email)
                         inputValid = false;
                         showError('Будь ласка, введіть дійсну адресу електронної пошти.');
                     } else if (input.type === 'tel' && input.hasAttribute('required') && input.value.trim() && !isValidPhone(input.value.trim())) {
-                        // Validation for required phone fields (like Viber phone)
                          inputValid = false;
                          showError('Будь ласка, введіть дійсний номер телефону.');
                     }
@@ -1124,11 +933,8 @@
          if (isRecognitionSupported && speechButton && commentsTextarea && speechStatus) {
             speechButton.addEventListener('click', () => {
                 try {
-                    // Check if recognition is already running before starting
-                    // Note: Standard SpeechRecognition doesn't have a reliable 'running' state property.
-                    // We manage state via button disabled/class.
                     if (speechButton.disabled) {
-                        recognition.stop(); // Attempt to stop if button indicates it's running
+                        recognition.stop();
                         return;
                     }
                     recognition.start();
@@ -1136,9 +942,7 @@
                     speechButton.disabled = true;
                     speechButton.classList.add('listening');
                 } catch (error) {
-                    // Handle potential errors like "recognition already started"
                     if (error.name === 'InvalidStateError') {
-                         // Ignore if already started, or try to stop/restart if needed
                          console.warn("Speech recognition already started?");
                     } else {
                         console.error("Speech recognition start error:", error);
@@ -1151,18 +955,14 @@
 
             recognition.onresult = (event) => {
                 let transcript = '';
-                // Concatenate final results
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         transcript += event.results[i][0].transcript;
                     }
                 }
-                // Append transcript with a space if textarea not empty
                 if (transcript) {
-                    // Trim existing value and add space only if there's content
                     const currentVal = commentsTextarea.value.trim();
                     commentsTextarea.value = currentVal + (currentVal ? ' ' : '') + transcript.trim();
-                    // Trigger input event for potential framework bindings
                     commentsTextarea.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             };
@@ -1178,13 +978,11 @@
                     errorMessage = 'Доступ до мікрофону заборонено.';
                 }
                 speechStatus.textContent = errorMessage;
-                 // Ensure button is re-enabled on error
                  speechButton.disabled = false;
                  speechButton.classList.remove('listening');
             };
 
             recognition.onend = () => {
-                // Clear status and reset button only when recognition truly ends
                 speechStatus.textContent = '';
                 speechButton.disabled = false;
                 speechButton.classList.remove('listening');
@@ -1193,7 +991,8 @@
 
 
         // --- Initialize ---
-        updateProgress();
+        createProgressDots(); // Create dots on load
+        updateProgress(); // Set initial state
 
     });
 </script>
