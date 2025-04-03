@@ -230,17 +230,28 @@
             </h2>
             <p class="mb-3 text-text-secondary">Шановний абоненте,</p>
             <p class="mb-5 text-text-secondary">Дякуємо за Ваш інтерес до нової послуги "Відеонагляд" від "Вечір Телеком"! Ми прагнемо створити сервіс, який буде максимально відповідати Вашим потребам. Просимо Вас приділити кілька хвилин, щоб поділитися своєю думкою та допомогти нам зробити "Відеонагляд" зручним та простим.</p>
-                 <p class="mb-2 text-text-secondary">
-                     <i class="fa-solid fa-gift text-accent-pink mr-2"></i> В якості подяки за участь в опитуванні, ми пропонуємо Вам можливість виграти зовнішню камеру відеоспостереження -
-                     <a href="https://vstore.net.ua/ua/videosposterezhennia-i-bezpeka/kamery/3mp-h265-wi-f-bullet-2e-3mp-ipc-k3dp-3h0wf28mm-181592" target="_blank" rel="noopener noreferrer" class="text-accent-blue hover:underline font-semibold">Imou Bullet 2E</a>.
-                 </p>
-                 <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 my-8">
+                <div class="w-full md:w-1/3 flex justify-center items-center bg-black/20 rounded-lg p-2 shadow-inner">
+                     <img src="https://vstore.net.ua/image/catalog/lmou1.webp"
+                          alt="Зображення камери Imou Bullet 2E"
+                          class="block h-40 md:h-44 w-auto rounded-md" /* Adjusted height, added rounded-md */
+                          onerror="this.onerror=null; this.src='https://placehold.co/200x160/2a2d35/cccccc?text=Камера+Imou'; this.classList.add('border', 'border-border-color');">
+                </div>
+                <div class="w-full md:w-2/3 prize-info bg-black/30 border border-accent-pink p-4 rounded-md text-center shadow-inner mt-6 md:mt-0">
+                     <p class="mb-2 text-text-secondary">
+                         <i class="fa-solid fa-gift text-accent-pink mr-2"></i> В якості подяки за участь в опитуванні, ми пропонуємо Вам можливість виграти зовнішню камеру відеоспостереження -
+                         <a href="https://vstore.net.ua/ua/videosposterezhennia-i-bezpeka/kamery/3mp-h265-wi-f-bullet-2e-3mp-ipc-k3dp-3h0wf28mm-181592" target="_blank" rel="noopener noreferrer" class="text-accent-blue hover:underline font-semibold">Imou Bullet 2E</a>.
+                     </p>
+                     <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
+                </div>
             </div>
 
             <div class="text-center mt-8">
                  <button class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2.5 px-8 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg" id="start-survey-btn">Розпочати опитування</button>
             </div>
         </section>
+
         <section id="survey-form" class="hidden">
             <form id="video-survey" novalidate>
                 <div class="progress-indicator mb-8">
