@@ -12,19 +12,24 @@
             theme: {
                 extend: {
                     colors: {
-                        'bg-dark': '#12141D',       // Dark background from the site
+                        'bg-dark': '#12141D',      // Dark background from the site
                         'text-light': '#ffffff',
                         'text-secondary': '#cccccc',
-                        'accent-blue': '#00aaff',   // Approximate blue accent
-                        'accent-pink': '#ff00ff',   // Approximate pink/purple accent
+                        'accent-blue': '#00aaff',  // Approximate blue accent
+                        'accent-pink': '#ff00ff',  // Approximate pink/purple accent
                         'border-color': '#333',
                         'input-bg': '#2a2d35',
                         'input-bg-hover': '#3a3f4a',
                         'btn-disabled-bg': '#555',
                         'btn-disabled-text': '#999',
-                        'error-bg': '#4d1f2a',     // Background for error messages
+                        'error-bg': '#4d1f2a',      // Background for error messages
                         'error-border': '#ff4d6d', // Border for error messages
                         'error-text': '#ffcad4',   // Text color for error messages
+                        // Added for glossy effect
+                        'gloss-start': 'rgba(55, 65, 81, 0.95)', // gray-800 with opacity
+                        'gloss-mid': 'rgba(0, 0, 0, 0.92)',     // black with opacity
+                        'gloss-end': 'rgba(31, 41, 55, 0.95)',   // gray-900 with opacity
+                        'gloss-border': 'rgba(75, 85, 99, 0.5)', // gray-700 with opacity
                     },
                     fontFamily: {
                         // Use 'Inter' as the primary font, fallback to system sans-serif
@@ -39,7 +44,7 @@
         body {
             /* --- Background Image Styling --- */
             background-image: linear-gradient(rgba(18, 20, 29, 0.85), rgba(18, 20, 29, 0.85)), url('https://vstore.net.ua/image/catalog/back.webp'); /* Dimming overlay + image */
-            background-size: cover;       /* Stretch to cover */
+            background-size: cover;      /* Stretch to cover */
             background-position: center;  /* Center the image */
             background-attachment: fixed; /* Fix background during scroll */
             background-color: theme('colors.bg-dark'); /* Fallback color */
@@ -68,11 +73,15 @@
             accent-color: theme('colors.accent-pink');
             transform: scale(1.2);
             cursor: pointer;
+            margin-right: 0.75rem; /* Added margin for spacing */
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         /* Input focus styles */
         input[type="text"]:focus,
         input[type="number"]:focus,
+        input[type="tel"]:focus,    /* Added tel type */
+        input[type="email"]:focus, /* Added email type */
         textarea:focus {
              outline: none;
              border-color: theme('colors.accent-blue');
@@ -89,9 +98,25 @@
 
         /* Ensure icons have fixed width for alignment */
         .form-group label i, .radio-label i, .checkbox-label i {
-            width: 20px;
-            text-align: center;
-            flex-shrink: 0; /* Prevent icons from shrinking */
+             width: 20px;
+             text-align: center;
+             flex-shrink: 0; /* Prevent icons from shrinking */
+             margin-right: 0.75rem; /* Space between icon and text */
+        }
+        /* Adjust label flex alignment */
+        .radio-label, .checkbox-label {
+            display: flex;
+            align-items: center; /* Vertically align items */
+            padding: 0.75rem; /* p-3 equivalent */
+            background-color: theme('colors.input-bg');
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .radio-label:hover, .checkbox-label:hover {
+            background-color: theme('colors.input-bg-hover');
+            border-color: theme('colors.accent-blue/50');
         }
 
         /* Active button state */
@@ -124,6 +149,62 @@
             opacity: 1;
         }
 
+        /* Style for inline inputs used within labels */
+        .inline-input {
+             padding: 0.375rem 0.625rem; /* p-1.5 equivalent */
+             background-color: theme('colors.bg-dark'); /* Slightly darker bg for contrast */
+             border: 1px solid theme('colors.border-color');
+             color: theme('colors.text-light');
+             border-radius: 0.25rem; /* rounded-sm */
+             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+             flex-grow: 1; /* Allow it to take available space */
+         }
+        .inline-input:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+         }
+         .inline-input:focus {
+             border-color: theme('colors.accent-blue');
+             box-shadow: 0 0 3px theme('colors.accent-blue');
+         }
+
+         /* Styling for communication preference notes */
+         .comm-pref-note {
+             font-size: 0.8rem;
+             color: theme('colors.text-secondary');
+             margin-left: calc(1.2em + 0.75rem + 0.75rem); /* checkbox size + margin + label padding */
+             margin-top: -0.25rem; /* Reduce space */
+             padding-bottom: 0.5rem; /* Space before next item */
+             display: block; /* Ensure it takes its own line */
+         }
+         .conditional-input-container {
+             margin-left: calc(1.2em + 0.75rem + 0.75rem); /* Align with text */
+             margin-top: 0.5rem;
+             padding-bottom: 0.5rem; /* Space before next item */
+         }
+         .form-input-conditional { /* Style for conditional inputs */
+             background-color: theme('colors.input-bg');
+             border: 1px solid theme('colors.border-color');
+             color: theme('colors.text-light');
+             border-radius: 0.375rem; /* rounded-md */
+             padding: 0.625rem; /* p-2.5 */
+             width: 100%;
+             font-size: 0.875rem; /* text-sm */
+             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+         }
+         .form-input-conditional:focus {
+             outline: none;
+             border-color: theme('colors.accent-blue');
+             box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3); /* Ring effect */
+         }
+
+         /* Glossy Background Style */
+        .glossy-bg {
+             background: linear-gradient(180deg, rgba(55, 65, 81, 0.95), rgba(0, 0, 0, 0.92)); /* From gray-800/95 to black/92 */
+             border: 1px solid theme('colors.gloss-border');
+        }
+
+
     </style>
 </head>
 <body class="bg-bg-dark text-text-light font-sans leading-relaxed">
@@ -132,44 +213,41 @@
         <div class="flex items-center gap-3 mb-2 sm:mb-0">
              <img src="https://vechir.ua/wp-content/uploads/2021/03/logo_vechir_2021-02.svg" alt="Логотип Вечір Телеком Старий" class="h-10" onerror="this.style.display='none'">
              <div class="logo">
-                <img src="https://vechir.ua/wp-content/uploads/2021/03/logo_vechir_2021-03.svg" alt="Логотип Вечір Телеком" class="h-10" onerror="this.outerHTML='<span class=\'text-xl font-bold\'>Вечір Телеком</span>'">
-            </div>
+                 <img src="https://vechir.ua/wp-content/uploads/2021/03/logo_vechir_2021-03.svg" alt="Логотип Вечір Телеком" class="h-10" onerror="this.outerHTML='<span class=\'text-xl font-bold\'>Вечір Телеком</span>'">
+             </div>
         </div>
         <div class="header-contact text-text-secondary text-sm sm:text-base">
-            <i class="fa-solid fa-phone mr-1"></i>
-            <a href="tel:0800303660" class="hover:text-text-light transition-colors">0 800 303 660</a> (Безкоштовно)
-            </div>
+             <i class="fa-solid fa-phone mr-1"></i>
+             <a href="tel:0800303660" class="hover:text-text-light transition-colors">0 800 303 660</a> (Безкоштовно)
+             </div>
     </header>
 
 
-    <main class="container max-w-3xl mx-auto p-4 sm:p-5 bg-input-bg/90 rounded-lg shadow-xl mb-8">
-
+    <main class="container max-w-3xl mx-auto p-4 sm:p-5 glossy-bg rounded-lg shadow-xl mb-8">
         <section id="intro">
             <h2 class="text-2xl font-bold text-accent-blue text-center mb-5 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-video"></i> Опитування щодо послуги "Відеонагляд"
+                 <i class="fa-solid fa-video"></i> Опитування щодо послуги "Відеонагляд"
             </h2>
             <p class="mb-3 text-text-secondary">Шановний абоненте,</p>
             <p class="mb-5 text-text-secondary">Дякуємо за Ваш інтерес до нової послуги "Відеонагляд" від "Вечір Телеком"! Ми прагнемо створити сервіс, який буде максимально відповідати Вашим потребам. Просимо Вас приділити кілька хвилин, щоб поділитися своєю думкою та допомогти нам зробити "Відеонагляд" зручним та простим.</p>
-
-            <div class="prize-info bg-black/30 border border-accent-pink p-4 rounded-md my-6 text-center shadow-inner">
-                <p class="mb-2 text-text-secondary">
-                    <i class="fa-solid fa-gift text-accent-pink mr-2"></i> В якості подяки за участь в опитуванні, ми пропонуємо Вам можливість виграти зовнішню камеру відеоспостереження -
-                    <a href="https://vstore.net.ua/ua/videosposterezhennia-i-bezpeka/kamery/3mp-h265-wi-f-bullet-2e-3mp-ipc-k3dp-3h0wf28mm-181592" target="_blank" rel="noopener noreferrer" class="text-accent-blue hover:underline font-semibold">Imou Bullet 2E</a>.
-                </p>
-                <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
+                 <p class="mb-2 text-text-secondary">
+                     <i class="fa-solid fa-gift text-accent-pink mr-2"></i> В якості подяки за участь в опитуванні, ми пропонуємо Вам можливість виграти зовнішню камеру відеоспостереження -
+                     <a href="https://vstore.net.ua/ua/videosposterezhennia-i-bezpeka/kamery/3mp-h265-wi-f-bullet-2e-3mp-ipc-k3dp-3h0wf28mm-181592" target="_blank" rel="noopener noreferrer" class="text-accent-blue hover:underline font-semibold">Imou Bullet 2E</a>.
+                 </p>
+                 <p class="text-sm text-text-secondary"><strong>Дата розіграшу:</strong> [буде відома пізніше] | <strong>Платформа:</strong> Instagram</p>
             </div>
 
             <div class="text-center mt-8">
-                <button class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2.5 px-8 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg" id="start-survey-btn">Розпочати опитування</button>
+                 <button class="btn bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2.5 px-8 rounded-md uppercase transition-colors duration-300 shadow-md hover:shadow-lg" id="start-survey-btn">Розпочати опитування</button>
             </div>
         </section>
-
         <section id="survey-form" class="hidden">
-            <form id="video-survey" novalidate> <div class="progress-indicator mb-8">
+            <form id="video-survey" novalidate>
+                <div class="progress-indicator mb-8">
                     <div class="progress-bar-container w-full bg-input-bg rounded-full h-2.5 overflow-hidden shadow-inner">
                         <div class="progress-bar h-full rounded-full" id="progress-bar" style="width: 0%;"></div>
                     </div>
-                    <div class="progress-text text-center mt-2 text-sm text-text-secondary" id="progress-text">Крок 1 з 12</div>
+                    <div class="progress-text text-center mt-2 text-sm text-text-secondary" id="progress-text">Крок 1 з 13</div>
                 </div>
 
                 <div id="error-message-container" role="alert">
@@ -177,12 +255,24 @@
                 </div>
 
                 <div class="survey-step active" data-step="1">
-                    <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-file-contract"></i> Питання 1: Ваш номер договору</h3>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-address-card"></i> Питання 1: Контактна інформація</h3>
+
                     <div class="form-group mb-5">
-                        <label for="contract-number" class="block mb-2 font-medium text-text-secondary">Персональний платіжний код<span class="text-accent-pink ml-1">*</span></label>
-                        <input type="text" id="contract-number" name="contract_number" placeholder="Введіть ваш код" required class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
+                        <label for="phone-number" class="block mb-2 font-medium text-text-secondary flex items-center">
+                            <i class="fa-solid fa-phone"></i> Ваш контактний номер телефону<span class="text-accent-pink ml-1">*</span>
+                        </label>
+                        <input type="tel" id="phone-number" name="phone_number" placeholder="+380 XX XXX XX XX" required class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
+                        <p class="input-hint text-xs text-text-secondary mt-1">Будь ласка, вкажіть дійсний номер для зв'язку.</p>
+                    </div>
+
+                    <div class="form-group mb-5">
+                        <label for="contract-number" class="block mb-2 font-medium text-text-secondary flex items-center">
+                           <i class="fa-solid fa-file-contract"></i> Ваш номер договору (ППК)<span class="text-accent-pink ml-1">*</span>
+                        </label>
+                        <input type="text" id="contract-number" name="contract_number" placeholder="Введіть ваш Персональний платіжний код" required class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition">
                         <p class="input-hint text-xs text-text-secondary mt-1">Це поле є обов'язковим для участі в розіграші.</p>
                     </div>
+
                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
                         <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0" disabled>Назад</button>
                         <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
@@ -192,26 +282,26 @@
                 <div class="survey-step" data-step="2">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-house-chimney-window"></i> Питання 2: Який тип приміщення? <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="premise_type" value="Квартира" required class="mr-3">
-                             <i class="fa-solid fa-building text-accent-blue mr-3"></i> Квартира
+                         <label class="radio-label">
+                             <input type="radio" name="premise_type" value="Квартира" required>
+                             <i class="fa-solid fa-building text-accent-blue"></i> Квартира
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="premise_type" value="Приватний будинок" class="mr-3">
-                             <i class="fa-solid fa-house text-accent-blue mr-3"></i> Приватний будинок
+                         <label class="radio-label">
+                             <input type="radio" name="premise_type" value="Приватний будинок">
+                             <i class="fa-solid fa-house text-accent-blue"></i> Приватний будинок
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="premise_type" value="Офіс" class="mr-3">
-                             <i class="fa-solid fa-briefcase text-accent-blue mr-3"></i> Офіс
+                         <label class="radio-label">
+                             <input type="radio" name="premise_type" value="Офіс">
+                             <i class="fa-solid fa-briefcase text-accent-blue"></i> Офіс
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="premise_type" value="Магазин" class="mr-3">
-                             <i class="fa-solid fa-store text-accent-blue mr-3"></i> Магазин
+                         <label class="radio-label">
+                             <input type="radio" name="premise_type" value="Магазин">
+                             <i class="fa-solid fa-store text-accent-blue"></i> Магазин
                          </label>
-                         <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="premise_type" value="Інше" class="mr-3">
-                             <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
-                             <input type="text" name="premise_type_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть тип" disabled>
+                         <label class="radio-label flex-wrap">
+                             <input type="radio" name="premise_type" value="Інше">
+                             <i class="fa-solid fa-question text-accent-blue"></i> Інше
+                             <input type="text" name="premise_type_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть тип" disabled>
                          </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -223,13 +313,13 @@
                 <div class="survey-step" data-step="3">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-video-camera"></i> Питання 3: Чи користуєтесь Ви зараз системою відеоспостереження? <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="using_now" value="Так" required data-next-step="5" class="mr-3">
-                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
+                         <label class="radio-label">
+                             <input type="radio" name="using_now" value="Так" required data-next-step="5">
+                             <i class="fa-solid fa-check text-accent-blue"></i> Так
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="using_now" value="Ні" required data-next-step="4" class="mr-3">
-                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         <label class="radio-label">
+                             <input type="radio" name="using_now" value="Ні" required data-next-step="4">
+                             <i class="fa-solid fa-times text-accent-blue"></i> Ні
                          </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -241,26 +331,26 @@
                 <div class="survey-step" data-step="4">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> Питання 4: Оберіть основну причину, чому не користуєтесь <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                              <input type="radio" name="reason_not_using" value="Висока вартість" required class="mr-3">
-                              <i class="fa-solid fa-dollar-sign text-accent-blue mr-3"></i> Висока вартість
+                          <label class="radio-label">
+                               <input type="radio" name="reason_not_using" value="Висока вартість" required>
+                               <i class="fa-solid fa-dollar-sign text-accent-blue"></i> Висока вартість
                           </label>
-                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                              <input type="radio" name="reason_not_using" value="Складність встановлення" class="mr-3">
-                              <i class="fa-solid fa-screwdriver-wrench text-accent-blue mr-3"></i> Складність встановлення та налаштування
+                          <label class="radio-label">
+                               <input type="radio" name="reason_not_using" value="Складність встановлення">
+                               <i class="fa-solid fa-screwdriver-wrench text-accent-blue"></i> Складність встановлення та налаштування
                           </label>
-                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                              <input type="radio" name="reason_not_using" value="Необхідність обслуговування" class="mr-3">
-                              <i class="fa-solid fa-user-gear text-accent-blue mr-3"></i> Необхідність обслуговування
+                          <label class="radio-label">
+                               <input type="radio" name="reason_not_using" value="Необхідність обслуговування">
+                               <i class="fa-solid fa-user-gear text-accent-blue"></i> Необхідність обслуговування
                           </label>
-                          <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                              <input type="radio" name="reason_not_using" value="Недостатня обізнаність" class="mr-3">
-                              <i class="fa-solid fa-info-circle text-accent-blue mr-3"></i> Недостатня обізнаність про переваги
+                          <label class="radio-label">
+                               <input type="radio" name="reason_not_using" value="Недостатня обізнаність">
+                               <i class="fa-solid fa-info-circle text-accent-blue"></i> Недостатня обізнаність про переваги
                           </label>
-                          <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                              <input type="radio" name="reason_not_using" value="Інше" class="mr-3">
-                              <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
-                              <input type="text" name="reason_not_using_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть причину" disabled>
+                          <label class="radio-label flex-wrap">
+                               <input type="radio" name="reason_not_using" value="Інше">
+                               <i class="fa-solid fa-question text-accent-blue"></i> Інше
+                               <input type="text" name="reason_not_using_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть причину" disabled>
                           </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -273,26 +363,26 @@
                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Питання 5: Які Ваші основні цілі від відеоспостереження?</h3>
                      <p class="input-hint text-sm text-text-secondary mb-4">Оберіть 1-2 найважливіші пункти. <span class="text-accent-pink ml-1">*</span></p>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="checkbox" name="goals[]" value="Безпека" class="mr-3">
-                             <i class="fa-solid fa-shield-halved text-accent-blue mr-3"></i> Забезпечення безпеки та захист від крадіжок
+                         <label class="checkbox-label">
+                             <input type="checkbox" name="goals[]" value="Безпека">
+                             <i class="fa-solid fa-shield-halved text-accent-blue"></i> Забезпечення безпеки та захист від крадіжок
                          </label>
-                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="checkbox" name="goals[]" value="Контроль" class="mr-3">
-                             <i class="fa-solid fa-users-viewfinder text-accent-blue mr-3"></i> Контроль за дітьми/персоналом/територією
+                         <label class="checkbox-label">
+                             <input type="checkbox" name="goals[]" value="Контроль">
+                             <i class="fa-solid fa-users-viewfinder text-accent-blue"></i> Контроль за дітьми/персоналом/територією
                          </label>
-                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="checkbox" name="goals[]" value="Докази" class="mr-3">
-                             <i class="fa-solid fa-file-video text-accent-blue mr-3"></i> Отримання доказів у разі інцидентів
+                         <label class="checkbox-label">
+                             <input type="checkbox" name="goals[]" value="Докази">
+                             <i class="fa-solid fa-file-video text-accent-blue"></i> Отримання доказів у разі інцидентів
                          </label>
-                         <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="checkbox" name="goals[]" value="Спокій" class="mr-3">
-                             <i class="fa-solid fa-face-smile-beam text-accent-blue mr-3"></i> Спокій та впевненість
+                         <label class="checkbox-label">
+                             <input type="checkbox" name="goals[]" value="Спокій">
+                             <i class="fa-solid fa-face-smile-beam text-accent-blue"></i> Спокій та впевненість
                          </label>
-                         <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="checkbox" name="goals[]" value="Інше" class="mr-3">
-                             <i class="fa-solid fa-question text-accent-blue mr-3"></i> Інше
-                             <input type="text" name="goals_other" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Вкажіть ціль" disabled>
+                         <label class="checkbox-label flex-wrap">
+                             <input type="checkbox" name="goals[]" value="Інше">
+                             <i class="fa-solid fa-question text-accent-blue"></i> Інше
+                             <input type="text" name="goals_other" class="inline-input mt-2 sm:mt-0 sm:ml-2" placeholder="Вкажіть ціль" disabled>
                          </label>
                      </div>
                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -304,17 +394,17 @@
                 <div class="survey-step" data-step="6">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-wallet"></i> Питання 6: Бюджет на відеоспостереження (щомісяця) <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="budget" value="<300" required class="mr-3"> До 300 грн
+                         <label class="radio-label">
+                             <input type="radio" name="budget" value="<300" required> До 300 грн
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="budget" value="300-500" class="mr-3"> 300-500 грн
+                         <label class="radio-label">
+                             <input type="radio" name="budget" value="300-500"> 300-500 грн
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="budget" value="500-800" class="mr-3"> 500-800 грн
+                         <label class="radio-label">
+                             <input type="radio" name="budget" value="500-800"> 500-800 грн
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="budget" value=">800" class="mr-3"> Більше 800 грн
+                         <label class="radio-label">
+                             <input type="radio" name="budget" value=">800"> Більше 800 грн
                          </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -326,17 +416,17 @@
                 <div class="survey-step" data-step="7">
                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-camera-retro"></i> Питання 7: Необхідна кількість камер <span class="text-accent-pink ml-1">*</span></h3>
                     <div class="form-group space-y-3 mb-5">
-                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="radio" name="camera_count" value="1" required class="mr-3"> 1
+                        <label class="radio-label">
+                            <input type="radio" name="camera_count" value="1" required> 1
                         </label>
-                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="radio" name="camera_count" value="2-3" class="mr-3"> 2-3
+                        <label class="radio-label">
+                            <input type="radio" name="camera_count" value="2-3"> 2-3
                         </label>
-                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="radio" name="camera_count" value="4-5" class="mr-3"> 4-5
+                        <label class="radio-label">
+                            <input type="radio" name="camera_count" value="4-5"> 4-5
                         </label>
-                        <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="radio" name="camera_count" value=">5" class="mr-3"> Більше 5
+                        <label class="radio-label">
+                            <input type="radio" name="camera_count" value=">5"> Більше 5
                         </label>
                     </div>
                     <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -348,34 +438,34 @@
                 <div class="survey-step" data-step="8">
                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-list-check"></i> Питання 8: Важливі функції <span class="text-accent-pink ml-1">*</span></h3>
                     <div class="form-group space-y-3 mb-5">
-                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Нічна зйомка" class="mr-3">
-                            <i class="fa-solid fa-moon text-accent-blue mr-3"></i> Нічна зйомка
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="features[]" value="Нічна зйомка">
+                            <i class="fa-solid fa-moon text-accent-blue"></i> Нічна зйомка
                         </label>
-                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Віддалений доступ" class="mr-3">
-                            <i class="fa-solid fa-mobile-screen-button text-accent-blue mr-3"></i> Віддалений доступ (телефон/комп'ютер)
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="features[]" value="Віддалений доступ">
+                            <i class="fa-solid fa-mobile-screen-button text-accent-blue"></i> Віддалений доступ (телефон/комп'ютер)
                         </label>
-                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Висока якість запису" class="mr-3">
-                            <i class="fa-solid fa-film text-accent-blue mr-3"></i> Висока якість запису (HD/FullHD+)
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="features[]" value="Висока якість запису">
+                            <i class="fa-solid fa-film text-accent-blue"></i> Висока якість запису (HD/FullHD+)
                         </label>
-                        <label class="checkbox-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Датчики руху" class="mr-3">
-                            <i class="fa-solid fa-person-running text-accent-blue mr-3"></i> Датчики руху
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="features[]" value="Датчики руху">
+                            <i class="fa-solid fa-person-running text-accent-blue"></i> Датчики руху
                         </label>
-                        <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Зберігання записів" class="mr-3">
-                            <i class="fa-solid fa-cloud-arrow-up text-accent-blue mr-3"></i> Зберігання записів
+                        <label class="checkbox-label flex-wrap">
+                            <input type="checkbox" name="features[]" value="Зберігання записів">
+                            <i class="fa-solid fa-cloud-arrow-up text-accent-blue"></i> Зберігання записів
                             <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(бажаний період:</span>
-                            <input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition w-16 text-center mt-2 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <input type="number" name="storage_days" min="1" placeholder="днів" class="inline-input p-1 w-16 text-center mt-2 sm:mt-0" disabled>
                             <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary"> днів)</span>
                         </label>
-                        <label class="checkbox-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                            <input type="checkbox" name="features[]" value="Отримання сповіщень" class="mr-3">
-                            <i class="fa-solid fa-bell text-accent-blue mr-3"></i> Отримання сповіщень
+                        <label class="checkbox-label flex-wrap">
+                            <input type="checkbox" name="features[]" value="Отримання сповіщень">
+                            <i class="fa-solid fa-bell text-accent-blue"></i> Отримання сповіщень
                              <span class="ml-1 mr-1 mt-2 sm:mt-0 text-sm text-text-secondary">(зручний спосіб:</span>
-                             <input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow mt-2 sm:mt-0 sm:ml-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                             <input type="text" name="notification_method" placeholder="напр., Telegram, SMS" class="inline-input p-1 mt-2 sm:mt-0 sm:ml-1" disabled>
                              <span class="ml-1 mt-2 sm:mt-0 text-sm text-text-secondary">)</span>
                         </label>
                     </div>
@@ -388,14 +478,14 @@
                 <div class="survey-step" data-step="9">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-credit-card"></i> Питання 9: Чи цікавить Вас купівля обладнання замість щомісячної оплати? <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="buy_equipment" value="Так" required class="mr-3"> Так
+                         <label class="radio-label">
+                             <input type="radio" name="buy_equipment" value="Так" required> Так
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="buy_equipment" value="Ні" class="mr-3"> Ні
+                         <label class="radio-label">
+                             <input type="radio" name="buy_equipment" value="Ні"> Ні
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="buy_equipment" value="Можливо" class="mr-3"> Можливо, в залежності від умов
+                         <label class="radio-label">
+                             <input type="radio" name="buy_equipment" value="Можливо"> Можливо, в залежності від умов
                          </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -407,13 +497,13 @@
                 <div class="survey-step" data-step="10">
                      <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-headset"></i> Питання 10: Чи бажаєте Ви отримувати консультацію щодо підбору та налаштування? <span class="text-accent-pink ml-1">*</span></h3>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="consultation" value="Так" required class="mr-3">
-                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
+                         <label class="radio-label">
+                             <input type="radio" name="consultation" value="Так" required>
+                             <i class="fa-solid fa-check text-accent-blue"></i> Так
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="consultation" value="Ні" class="mr-3">
-                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         <label class="radio-label">
+                             <input type="radio" name="consultation" value="Ні">
+                             <i class="fa-solid fa-times text-accent-blue"></i> Ні
                          </label>
                      </div>
                       <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -426,14 +516,14 @@
                      <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-shield-dog"></i> Питання 11: Чи цікавлять Вас інші послуги, пов'язані з безпекою? <span class="text-accent-pink ml-1">*</span></h3>
                      <p class="input-hint text-sm text-text-secondary mb-4">Наприклад: датчики руху, диму, охоронна сигналізація тощо.</p>
                      <div class="form-group space-y-3 mb-5">
-                         <label class="radio-label flex items-center flex-wrap p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="other_services" value="Так" required class="mr-3">
-                             <i class="fa-solid fa-check text-accent-blue mr-3"></i> Так
-                              <input type="text" name="other_services_details" placeholder="Вкажіть, які саме" class="inline-input mt-2 sm:mt-0 sm:ml-3 p-1.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition flex-grow disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                         <label class="radio-label flex-wrap">
+                             <input type="radio" name="other_services" value="Так" required>
+                             <i class="fa-solid fa-check text-accent-blue"></i> Так
+                              <input type="text" name="other_services_details" placeholder="Вкажіть, які саме" class="inline-input mt-2 sm:mt-0 sm:ml-2" disabled>
                          </label>
-                         <label class="radio-label flex items-center p-3 bg-input-bg hover:bg-input-bg-hover rounded-md cursor-pointer transition-colors border border-transparent hover:border-accent-blue/50">
-                             <input type="radio" name="other_services" value="Ні" class="mr-3">
-                             <i class="fa-solid fa-times text-accent-blue mr-3"></i> Ні
+                         <label class="radio-label">
+                             <input type="radio" name="other_services" value="Ні">
+                             <i class="fa-solid fa-times text-accent-blue"></i> Ні
                          </label>
                      </div>
                      <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
@@ -443,7 +533,59 @@
                 </div>
 
                 <div class="survey-step" data-step="12">
-                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Питання 12: Ваші побажання та коментарі</h3>
+                    <h3 class="text-xl font-semibold text-accent-blue mb-2 flex items-center gap-2"><i class="fa-solid fa-envelope-open-text"></i> Питання 12: Бажані способи зв'язку</h3>
+                    <p class="input-hint text-sm text-text-secondary mb-4">Для оперативного інформування про стан послуг, акції та важливі новини ми можемо використовувати різні канали зв'язку. Будь ласка, оберіть ті, якими Ви користуєтесь та через які <strong>згодні</strong> отримувати повідомлення від 'Вечір Телеком':</p>
+                    <div class="form-group space-y-1 mb-5">
+                        <div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="comm-viber" name="communication_prefs[]" value="viber">
+                                <i class="fab fa-viber text-purple-500"></i> Viber
+                            </label>
+                            <span class="comm-pref-note">Ми будемо використовувати номер телефону, вказаний Вами раніше.</span>
+                        </div>
+                        <div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="comm-telegram" name="communication_prefs[]" value="telegram">
+                                <i class="fab fa-telegram text-sky-500"></i> Telegram Бот
+                            </label>
+                             <span class="comm-pref-note">Ми надішлемо запрошення до нашого інформаційного боту.</span>
+                             <div id="telegram-username-container" class="conditional-input-container hidden">
+                                <label for="telegram-username" class="block mb-1 text-sm font-medium text-text-secondary">Ваш Telegram username (необов'язково):</label>
+                                <input type="text" id="telegram-username" name="telegram_username" class="form-input-conditional" placeholder="@username">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="comm-email" name="communication_prefs[]" value="email">
+                                <i class="fa-solid fa-at text-red-500"></i> Email
+                            </label>
+                            <div id="email-input-container" class="conditional-input-container hidden">
+                                <label for="email-address" class="block mb-1 text-sm font-medium text-text-secondary">Ваша Email адреса:<span class="text-accent-pink ml-1">*</span></label>
+                                <input type="email" id="email-address" name="email_address" class="form-input-conditional" placeholder="example@email.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="comm-sms" name="communication_prefs[]" value="sms">
+                                <i class="fa-solid fa-comment-sms text-green-500"></i> SMS
+                            </label>
+                            <span class="comm-pref-note">На номер телефону, вказаний раніше.</span>
+                        </div>
+                         <div class="pt-3">
+                             <label class="checkbox-label">
+                                <input type="checkbox" id="comm-none" name="communication_prefs_optout" value="none">
+                                <i class="fa-solid fa-comment-slash text-gray-500"></i> Не бажаю отримувати додаткові інформаційні повідомлення
+                            </label>
+                        </div>
+                    </div>
+                    <div class="navigation-buttons flex flex-col-reverse sm:flex-row justify-between mt-8 pt-5 border-t border-border-color">
+                        <button type="button" class="btn btn-back bg-input-bg hover:bg-input-bg-hover text-text-secondary border border-border-color font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto mb-2 sm:mb-0">Назад</button>
+                        <button type="button" class="btn btn-next bg-accent-blue hover:bg-blue-500 text-text-light font-bold py-2 px-6 rounded-md uppercase transition-colors duration-300 w-full sm:w-auto">Далі</button>
+                    </div>
+                </div>
+
+                <div class="survey-step" data-step="13">
+                     <h3 class="text-xl font-semibold text-accent-blue mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Питання 13: Ваші побажання та коментарі</h3>
                      <div class="form-group mb-5">
                          <label for="comments" class="block mb-2 font-medium text-text-secondary">Розкажіть, що ще важливо для Вас у послузі відеоспостереження?</label>
                          <textarea id="comments" name="comments" rows="4" placeholder="Напишіть Ваші думки тут..." class="w-full p-2.5 bg-input-bg border border-border-color text-text-light rounded-md focus:border-accent-blue focus:ring-accent-blue focus:ring-1 transition resize-vertical"></textarea>
@@ -471,9 +613,11 @@
 
     <footer class="text-center mt-auto py-4 text-sm text-text-secondary border-t border-border-color bg-bg-dark/80">
         © Вечір Телеком, 2025. Всі права захищено.
-     </footer>
+    </footer>
 
 <script>
+    // JavaScript remains the same as the previous version
+    // It already handles validation for required fields and form data collection
     document.addEventListener('DOMContentLoaded', function() {
         // --- DOM Element References ---
         const introSection = document.getElementById('intro');
@@ -486,9 +630,22 @@
         const progressText = document.getElementById('progress-text');
         const errorContainer = document.getElementById('error-message-container');
         const errorTextElement = document.getElementById('error-message-text');
-        const totalSteps = steps.length;
+        const totalSteps = steps.length; // Automatically counts steps now
         let currentStep = 1;
         const history = [1]; // Track visited steps for back navigation
+
+        // --- References for Communication Preferences (Step 12) ---
+        const commViberCheckbox = document.getElementById('comm-viber');
+        const commTelegramCheckbox = document.getElementById('comm-telegram');
+        const commEmailCheckbox = document.getElementById('comm-email');
+        const commSmsCheckbox = document.getElementById('comm-sms');
+        const commNoneCheckbox = document.getElementById('comm-none');
+        const telegramContainer = document.getElementById('telegram-username-container');
+        const emailContainer = document.getElementById('email-input-container');
+        const emailInput = document.getElementById('email-address');
+        const telegramInput = document.getElementById('telegram-username');
+
+        const communicationCheckboxes = [commViberCheckbox, commTelegramCheckbox, commEmailCheckbox, commSmsCheckbox]; // Array of channel checkboxes
 
         // --- Helper Functions ---
 
@@ -499,7 +656,7 @@
             // Calculate percentage based on current step (0-indexed) vs total steps (0-indexed)
             const progressPercentage = totalSteps > 1 ? ((currentStep - 1) / (totalSteps - 1)) * 100 : 0;
             progressBar.style.width = `${progressPercentage}%`;
-            progressText.textContent = `Крок ${currentStep} з ${totalSteps}`;
+            progressText.textContent = `Крок ${currentStep} з ${totalSteps}`; // Updated total steps here
         }
 
         /**
@@ -551,6 +708,18 @@
         }
 
         /**
+         * Basic email format validation.
+         * @param {string} email - The email string to validate.
+         * @returns {boolean} - True if the format is roughly valid, false otherwise.
+         */
+        function isValidEmail(email) {
+            // Simple regex for basic email structure check
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+
+        /**
          * Validates the inputs within the currently active step.
          * @param {HTMLElement} currentStepElement - The DOM element of the current step.
          * @returns {boolean} - True if the step is valid, false otherwise.
@@ -558,53 +727,51 @@
         function validateStep(currentStepElement) {
             let isValid = true;
             let firstInvalidElement = null; // To focus later
+            const currentStepNumber = parseInt(currentStepElement.dataset.step);
 
-            // Clear previous error borders
-            currentStepElement.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
-            hideError(); // Clear previous error messages
+            // Clear previous error borders/messages
+            currentStepElement.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border', 'border-red-500')); // Remove border class too
+            hideError();
 
             // --- Check all required inputs within the current step ---
             const requiredInputs = currentStepElement.querySelectorAll('[required]');
             requiredInputs.forEach(input => {
-                // Skip validation for inputs inside non-active steps (shouldn't happen with current logic, but good practice)
-                // Also skip hidden or disabled inputs
+                // Skip validation for inputs inside non-active steps or disabled inputs
                 if (!input.closest('.survey-step.active') || input.offsetParent === null || input.disabled) {
                     return;
                 }
 
                 let inputValid = true;
-                const inputWrapper = input.closest('label') || input; // Element to highlight
+                // Use closest label or the input itself for highlighting
+                const inputWrapper = input.closest('label') || input;
 
                 // --- Radio Button Validation ---
                 if (input.type === 'radio') {
                     const groupName = input.name;
-                    // Check if *any* radio in this group *within the current step* is checked
                     const groupChecked = currentStepElement.querySelector(`input[name="${groupName}"]:checked`);
                     if (!groupChecked) {
                         inputValid = false;
-                        // Only mark the first radio of the group as invalid for visual feedback
-                        if (!currentStepElement.querySelector(`input[name="${groupName}"].border-red-500`)) {
-                             inputWrapper.classList.add('border', 'border-red-500'); // Highlight the label
-                             if (!firstInvalidElement) firstInvalidElement = input;
+                        // Highlight the first radio's label of the group
+                        const firstRadioLabel = currentStepElement.querySelector(`input[name="${groupName}"]`)?.closest('label');
+                        if (firstRadioLabel && !firstRadioLabel.classList.contains('border-red-500')) {
+                            firstRadioLabel.classList.add('border', 'border-red-500');
+                             if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector(`input[name="${groupName}"]`);
                         }
                     }
                 }
-                // --- Checkbox Group Validation (e.g., Step 5, Step 8) ---
-                // This logic assumes the *group* is required, meaning at least one checkbox must be checked.
-                // We check this later specifically for Step 5 & 8, as individual checkboxes might not be 'required'.
-                // If a single checkbox *was* required, this would handle it:
-                // else if (input.type === 'checkbox' && !input.checked) {
-                //     inputValid = false;
-                // }
-
-                // --- Text, Number, Textarea Validation ---
-                else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea') && !input.value.trim()) {
+                // --- Text, Number, Textarea, Email, Tel Validation ---
+                else if ((input.type === 'text' || input.type === 'number' || input.type === 'textarea' || input.type === 'email' || input.type === 'tel') && !input.value.trim()) {
                     inputValid = false;
                 }
+                // --- Email Format Validation ---
+                else if (input.type === 'email' && input.value.trim() && !isValidEmail(input.value.trim())) {
+                    inputValid = false;
+                    showError('Будь ласка, введіть дійсну адресу електронної пошти.'); // Specific error
+                }
 
-                // Mark invalid text/number/textarea inputs
+                // Mark invalid text/number/textarea/email/tel inputs
                 if (!inputValid && input.type !== 'radio') {
-                    inputWrapper.classList.add('border-red-500');
+                    inputWrapper.classList.add('border', 'border-red-500');
                     if (!firstInvalidElement) firstInvalidElement = input;
                 }
 
@@ -615,41 +782,56 @@
             });
 
             // --- Specific Validation for Step 5 (Goals - Checkboxes) ---
-            if (currentStepElement.dataset.step === "5") {
+            if (currentStepNumber === 5) {
                 const goalsCheckedCount = currentStepElement.querySelectorAll('input[name="goals[]"]:checked').length;
                 if (goalsCheckedCount === 0) {
                      isValid = false;
-                     // Highlight the first checkbox label if none are selected
                      const firstGoalLabel = currentStepElement.querySelector('input[name="goals[]"]').closest('label');
                      if (firstGoalLabel) {
-                        firstGoalLabel.classList.add('border', 'border-red-500');
-                        if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="goals[]"]');
+                         firstGoalLabel.classList.add('border', 'border-red-500');
+                          if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="goals[]"]');
                      }
                      showError('Будь ласка, оберіть хоча б одну ціль.');
                 } else if (goalsCheckedCount > 2) {
-                     // This is handled by the change listener now, but double-check here if needed.
-                     // isValid = false;
-                     // showError('Будь ласка, оберіть не більше двох цілей.');
-                     // // Optionally highlight all checked ones
-                     // currentStepElement.querySelectorAll('input[name="goals[]"]:checked').forEach(cb => {
-                     //     cb.closest('label').classList.add('border', 'border-red-500');
-                     //     if (!firstInvalidElement) firstInvalidElement = cb;
-                     // });
+                    // Handled by change listener, but double-check
+                    isValid = false; // Technically invalid state
+                    showError('Будь ласка, оберіть не більше двох цілей.');
+                    currentStepElement.querySelectorAll('input[name="goals[]"]:checked').forEach(cb => {
+                         cb.closest('label').classList.add('border', 'border-red-500');
+                         if (!firstInvalidElement) firstInvalidElement = cb;
+                    });
                 }
             }
 
              // --- Specific Validation for Step 8 (Features - Checkboxes) ---
-             if (currentStepElement.dataset.step === "8") {
-                const featuresCheckedCount = currentStepElement.querySelectorAll('input[name="features[]"]:checked').length;
-                if (featuresCheckedCount === 0) {
+             if (currentStepNumber === 8) {
+                 const featuresCheckedCount = currentStepElement.querySelectorAll('input[name="features[]"]:checked').length;
+                 if (featuresCheckedCount === 0) {
                      isValid = false;
                      const firstFeatureLabel = currentStepElement.querySelector('input[name="features[]"]').closest('label');
                       if (firstFeatureLabel) {
-                        firstFeatureLabel.classList.add('border', 'border-red-500');
-                         if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="features[]"]');
+                         firstFeatureLabel.classList.add('border', 'border-red-500');
+                          if (!firstInvalidElement) firstInvalidElement = currentStepElement.querySelector('input[name="features[]"]');
                      }
                      showError('Будь ласка, оберіть хоча б одну важливу функцію.');
-                }
+                 }
+             }
+
+             // --- Specific Validation for Step 12 (Communication Preferences) ---
+             // Not strictly required to select *something*, but email needs validation if checked
+             if (currentStepNumber === 12) {
+                 if (commEmailCheckbox.checked && !emailInput.value.trim()) {
+                     isValid = false;
+                     emailInput.classList.add('border-red-500'); // Highlight input directly
+                     if (!firstInvalidElement) firstInvalidElement = emailInput;
+                     showError('Будь ласка, вкажіть Вашу Email адресу, оскільки Ви обрали цей канал.');
+                 } else if (commEmailCheckbox.checked && emailInput.value.trim() && !isValidEmail(emailInput.value.trim())) {
+                     // Error shown by general email validation, just ensure highlighting
+                     isValid = false;
+                     emailInput.classList.add('border-red-500');
+                     if (!firstInvalidElement) firstInvalidElement = emailInput;
+                     // Error message already set by general validation
+                 }
              }
 
 
@@ -657,7 +839,7 @@
             const otherRadiosOrCheckboxes = currentStepElement.querySelectorAll('input[value="Інше"]:checked, input[value="Зберігання записів"]:checked, input[value="Отримання сповіщень"]:checked, input[value="Так"][name="other_services"]:checked');
             otherRadiosOrCheckboxes.forEach(roc => {
                 const otherInput = roc.closest('label').querySelector('input[type="text"], input[type="number"], textarea');
-                // Check if the related input exists, is enabled (meaning its parent IS checked), and is empty
+                // Check if the related input exists, is enabled, and is empty
                 if (otherInput && !otherInput.disabled && !otherInput.value.trim()){
                     isValid = false;
                     otherInput.classList.add('border-red-500'); // Highlight the specific text input
@@ -665,8 +847,8 @@
                 }
             });
 
-            // --- Show General Error if Invalid ---
-            if (!isValid && !errorContainer.classList.contains('visible')) { // Avoid showing generic if specific error already shown
+            // --- Show General Error if Invalid and no specific error shown ---
+            if (!isValid && !errorContainer.classList.contains('visible')) {
                 showError('Будь ласка, заповніть або виберіть значення для всіх обов\'язкових полів, позначених *. ');
             }
 
@@ -697,7 +879,6 @@
                 const currentStepElement = target.closest('.survey-step');
                 const currentStepNumber = parseInt(currentStepElement.dataset.step);
 
-                // Validate the current step before proceeding
                 if (!validateStep(currentStepElement)) {
                     return; // Stop if validation fails
                 }
@@ -705,22 +886,18 @@
                 let nextStepNumber = currentStepNumber + 1; // Default next step
 
                 // --- Conditional Logic: Step 3 (Using Now?) ---
-                // Determines whether to go to Step 4 (Reason Not Using) or Step 5 (Goals)
                 if (currentStepNumber === 3) {
                     const usingNowChecked = form.querySelector('input[name="using_now"]:checked');
                     if (usingNowChecked) {
-                        nextStepNumber = parseInt(usingNowChecked.dataset.nextStep); // Get target from data attribute
+                        nextStepNumber = parseInt(usingNowChecked.dataset.nextStep);
                     } else {
-                        // Should not happen due to validation, but good to have a fallback
-                        console.warn("No option selected in step 3");
-                        showError("Будь ласка, оберіть варіант у кроці 3.");
-                        return;
+                        // Validation should prevent this
+                        console.warn("No option selected in step 3"); return;
                     }
                 }
                 // --- Conditional Logic: Step 4 (Reason Not Using) ---
-                // Step 4 *always* skips to Step 5 (Goals)
                 else if (currentStepNumber === 4) {
-                    nextStepNumber = 5;
+                    nextStepNumber = 5; // Always skip to step 5 from step 4
                 }
 
                 // Navigate if the next step is valid
@@ -731,8 +908,7 @@
                     }
                     showStep(nextStepNumber);
                 } else {
-                    // Should be handled by the "Submit" button on the last step
-                    console.log("Tried to go 'Next' beyond the last step.");
+                    console.log("Tried to go 'Next' beyond the last step."); // Should be handled by submit
                 }
             }
 
@@ -758,53 +934,50 @@
                 // --- Form Data Collection ---
                 const formData = new FormData(form);
                 const data = {};
-                // Clean up data: remove empty 'other' fields, handle checkbox arrays
-                const features = [];
-                const goals = [];
+                // Use getAll for multi-select fields (checkboxes)
+                data['goals'] = formData.getAll('goals[]');
+                data['features'] = formData.getAll('features[]');
+                data['communication_prefs'] = formData.getAll('communication_prefs[]'); // Collect communication channels
+
+                // Process other fields, cleaning up 'other' and optional fields
                 for (let [key, value] of formData.entries()) {
+                    if (key.endsWith('[]')) continue; // Skip array fields already handled by getAll
                     if (key.endsWith('_other') && value.trim() === '') continue; // Skip empty 'other'
-                    if (key === 'features[]') {
-                        features.push(value);
-                        continue;
+                    if (key === 'telegram_username' && value.trim() === '') continue; // Skip empty optional telegram username
+                    if (key === 'email_address' && value.trim() === '') continue; // Skip empty optional email if checkbox wasn't checked (though should be required if checked)
+                    if (key === 'storage_days' && value.trim() === '') continue; // Skip empty optional storage days
+                    if (key === 'notification_method' && value.trim() === '') continue; // Skip empty optional notification method
+                    if (key === 'other_services_details' && value.trim() === '') continue; // Skip empty optional other services details
+
+                    // Include opt-out status if checked
+                    if (key === 'communication_prefs_optout' && value === 'none') {
+                        data[key] = true; // Store as boolean true if opted out
+                    } else if (key !== 'communication_prefs_optout') { // Avoid storing optout if not checked
+                         data[key] = value;
                     }
-                     if (key === 'goals[]') {
-                        goals.push(value);
-                        continue;
-                    }
-                    // Add other fields directly
-                     data[key] = value;
                 }
-                 if (features.length > 0) data['features'] = features;
-                 if (goals.length > 0) data['goals'] = goals;
 
                 console.log("Collected Form Data:", JSON.stringify(data, null, 2));
 
                 // --- !!! IMPORTANT: Send data to server here !!! ---
-                // Example using fetch (replace with your actual endpoint and method)
                 /*
                 fetch('/your-server-endpoint', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json(); // Or response.text() depending on server response
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
                 })
                 .then(result => {
                     console.log('Success:', result);
-                    // Show success message ONLY after successful submission
                     surveyFormSection.style.display = 'none';
                     successMessageSection.style.display = 'block';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 })
                 .catch(error => {
                     console.error('Error submitting form:', error);
-                    // Show an error message to the user
                     showError('Виникла помилка під час відправлення форми. Спробуйте ще раз.');
                 });
                 */
@@ -818,16 +991,13 @@
 
         // --- Dynamic Input Handling (Enable/Disable "Other" fields) ---
         form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
-            input.addEventListener('change', function() {
+            input.addEventListener('change', function(event) { // Pass event
                 const label = this.closest('label');
-                if (!label) return; // Should always have a label
+                if (!label) return;
 
-                // Find related text/number/textarea input within the same label or a closely associated container
-                // This selector might need adjustment based on exact HTML structure variations
                 const otherInput = label.querySelector('input[type="text"], input[type="number"], textarea');
 
                 // --- Radio Button Specific Logic ---
-                // When a radio changes, disable *all* 'other' inputs in its group first
                 if (this.type === 'radio') {
                     const radioGroupName = this.name;
                     form.querySelectorAll(`input[type="radio"][name="${radioGroupName}"]`).forEach(radioInGroup => {
@@ -835,35 +1005,36 @@
                         if (!relatedLabel) return;
                         const relatedOtherInput = relatedLabel.querySelector('input[type="text"], input[type="number"], textarea');
                         if (relatedOtherInput) {
-                            relatedOtherInput.disabled = true;
-                            relatedOtherInput.required = false;
-                            relatedOtherInput.classList.remove('border-red-500'); // Clear validation state
-                            // relatedOtherInput.value = ''; // Optionally clear value
+                            const isThisRadioSelected = radioInGroup.checked;
+                            relatedOtherInput.disabled = !isThisRadioSelected;
+                            relatedOtherInput.required = isThisRadioSelected; // Make required only if its parent is checked
+                            if (!isThisRadioSelected) {
+                                // relatedOtherInput.value = ''; // Optionally clear value
+                                relatedOtherInput.classList.remove('border-red-500');
+                            }
                         }
                     });
                 }
-
-                // --- General Logic for Enabling/Disabling the specific 'other' input ---
-                if (otherInput) {
+                // --- Checkbox Specific Logic for Enabling/Disabling ---
+                else if (otherInput) { // Handle checkboxes with associated text inputs
                     const shouldBeEnabled = this.checked;
                     otherInput.disabled = !shouldBeEnabled;
                     otherInput.required = shouldBeEnabled; // Make required only if its parent is checked
-
                     if (!shouldBeEnabled) {
                         otherInput.value = ''; // Clear value if unchecked/disabled
                         otherInput.classList.remove('border-red-500'); // Clear validation state
                     } else {
-                         // Don't auto-focus on load, only on user interaction
-                         if (event && event.type === 'change') { // Check if triggered by user change
+                         // Focus only if triggered by user interaction
+                         if (event && event.type === 'change') {
                             otherInput.focus();
                          }
                     }
                 }
             });
 
-            // --- Initial state check on page load (for browser pre-fill/refresh) ---
-            // Trigger the change handler logic without an event object to set initial state
-             input.dispatchEvent(new Event('change', { bubbles: false })); // Use 'bubbles: false' to avoid triggering form-level listener
+             // Trigger initial state check without focusing
+            const initialChangeEvent = new Event('change', { bubbles: false });
+            input.dispatchEvent(initialChangeEvent);
         });
 
 
@@ -875,29 +1046,74 @@
             cb.addEventListener('change', () => {
                 const checkedCount = form.querySelectorAll('input[name="goals[]"]:checked').length;
                 if (checkedCount > 2) {
-                    // Instead of alert, show message in the error container
                     showError("Будь ласка, оберіть не більше двох цілей.");
                     cb.checked = false; // Revert the last check
-
-                    // Optional: Re-enable the 'other' input if the 'other' checkbox was just unchecked
-                     const label = cb.closest('label');
-                     if (label && cb.value === 'Інше') {
-                         const otherInput = label.querySelector('input[type="text"]');
-                         if(otherInput) {
-                            otherInput.disabled = true;
-                            otherInput.required = false;
-                            otherInput.value = '';
-                            otherInput.classList.remove('border-red-500');
-                         }
-                     }
+                    // Trigger change again to potentially disable 'other' input if needed
+                    cb.dispatchEvent(new Event('change', { bubbles: false }));
                 } else {
-                    // If count is valid, ensure error message is hidden if it was related to this
                     if (errorTextElement.textContent.includes("двох цілей")) {
                         hideError();
                     }
                 }
             });
         });
+
+        // --- Communication Preferences Logic (Step 12) ---
+
+        // Toggle visibility for conditional inputs
+        const toggleCommInputVisibility = (checkbox, container, inputElement) => {
+            if (checkbox.checked) {
+                container.classList.remove('hidden');
+                inputElement.required = (inputElement.id === 'email-address'); // Make email required if checked
+            } else {
+                container.classList.add('hidden');
+                inputElement.required = false;
+                inputElement.value = ''; // Clear value
+                inputElement.classList.remove('border-red-500'); // Clear validation
+            }
+        };
+
+        // Event listeners for Email and Telegram checkboxes
+        if (commEmailCheckbox && emailContainer && emailInput) {
+            commEmailCheckbox.addEventListener('change', () => {
+                toggleCommInputVisibility(commEmailCheckbox, emailContainer, emailInput);
+                if (commEmailCheckbox.checked) commNoneCheckbox.checked = false; // Uncheck opt-out
+            });
+            toggleCommInputVisibility(commEmailCheckbox, emailContainer, emailInput); // Initial check
+        }
+        if (commTelegramCheckbox && telegramContainer && telegramInput) {
+            commTelegramCheckbox.addEventListener('change', () => {
+                toggleCommInputVisibility(commTelegramCheckbox, telegramContainer, telegramInput);
+                 if (commTelegramCheckbox.checked) commNoneCheckbox.checked = false; // Uncheck opt-out
+            });
+            toggleCommInputVisibility(commTelegramCheckbox, telegramContainer, telegramInput); // Initial check
+        }
+
+        // Listener for other communication checkboxes to uncheck opt-out
+        [commViberCheckbox, commSmsCheckbox].forEach(cb => {
+            if (cb) {
+                cb.addEventListener('change', () => {
+                    if (cb.checked) commNoneCheckbox.checked = false;
+                });
+            }
+        });
+
+
+        // Listener for Opt-out checkbox
+        if (commNoneCheckbox) {
+            commNoneCheckbox.addEventListener('change', () => {
+                if (commNoneCheckbox.checked) {
+                    // Uncheck all other communication checkboxes
+                    communicationCheckboxes.forEach(cb => {
+                        if (cb && cb.checked) {
+                            cb.checked = false;
+                            // Manually trigger change event to hide conditional inputs if necessary
+                            cb.dispatchEvent(new Event('change', { bubbles: false }));
+                        }
+                    });
+                }
+            });
+        }
 
         // --- Initialize ---
         updateProgress(); // Set initial progress bar state
